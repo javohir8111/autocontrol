@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoControl — Obuna</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#050810; --card:#0d1117;
+    --accent:#00d4ff; --accent2:#0066ff; --green:#00ff88;
+    --red:#ff3366; --orange:#ff8800; --yellow:#ffd700;
+    --text:#e2e8f0; --muted:#64748b; --border:rgba(0,212,255,0.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Exo 2',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:40px; }
+  .topbar {
+    display:flex; align-items:center; gap:14px; padding:16px 20px;
+    background:rgba(13,17,23,0.95); backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100;
+  }
+  .back-btn {
+    background:rgba(255,255,255,0.06); border:1px solid var(--border);
+    border-radius:10px; width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:16px; text-decoration:none; color:var(--text);
+  }
+  .topbar h1 { font-family:'Orbitron',sans-serif; font-size:15px; font-weight:700; }
+  .content { padding:24px 20px; }
+
+  /* Hero */
+  .sub-hero {
+    text-align:center; padding:30px 20px; margin-bottom:24px;
+    background:linear-gradient(135deg,#0a1000,#0f2000);
+    border:1px solid rgba(255,215,0,0.2); border-radius:28px; position:relative; overflow:hidden;
+  }
+  .sub-hero::before {
+    content:''; position:absolute; top:-50px; left:50%; transform:translateX(-50%);
+    width:250px; height:250px; border-radius:50%;
+    background:radial-gradient(circle,rgba(255,215,0,0.1) 0%,transparent 70%);
+  }
+  .crown { font-size:60px; margin-bottom:12px; position:relative; }
+  .sub-hero h2 { font-family:'Orbitron',sans-serif; font-size:22px; font-weight:900; color:var(--yellow); position:relative; }
+  .sub-hero p { color:var(--muted); font-size:14px; margin-top:8px; position:relative; }
+
+  /* Plans */
+  .plan-card {
+    border-radius:22px; padding:24px; margin-bottom:14px; cursor:pointer; transition:all 0.3s;
+    border:2px solid transparent;
+  }
+  .plan-free {
+    background:var(--card); border-color:var(--border);
+  }
+  .plan-pro {
+    background:linear-gradient(135deg,#0f1d00,#1a2e00);
+    border-color:rgba(255,215,0,0.4);
+    box-shadow:0 0 30px rgba(255,215,0,0.1);
+  }
+  .plan-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; }
+  .plan-name { font-family:'Orbitron',sans-serif; font-size:18px; font-weight:700; }
+  .plan-price { text-align:right; }
+  .price-main { font-family:'Orbitron',sans-serif; font-size:28px; font-weight:900; }
+  .price-period { font-size:12px; color:var(--muted); }
+  .best-badge {
+    display:inline-block; padding:3px 10px; border-radius:6px; font-size:11px; font-weight:700;
+    background:linear-gradient(135deg,#8B6914,var(--yellow)); color:#000; margin-bottom:6px;
+  }
+  .feature-list { list-style:none; }
+  .feature-item {
+    display:flex; align-items:center; gap:10px; padding:8px 0;
+    border-bottom:1px solid rgba(255,255,255,0.04); font-size:14px;
+  }
+  .feature-item:last-child { border:none; }
+  .fi-check { width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; }
+  .fi-check.yes { background:rgba(0,255,136,0.2); color:var(--green); }
+  .fi-check.no { background:rgba(255,255,255,0.06); color:var(--muted); }
+
+  /* Current status */
+  .status-card {
+    background:var(--card); border:1px solid var(--border); border-radius:20px; padding:20px; margin-bottom:20px;
+  }
+  .status-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:14px; }
+  .status-row:last-child { border:none; }
+  .status-val { font-weight:600; color:var(--accent); }
+
+  .btn-primary {
+    width:100%; background:linear-gradient(135deg,var(--accent2),var(--accent));
+    border:none; border-radius:14px; padding:16px; color:#fff;
+    font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700;
+    letter-spacing:1px; cursor:pointer; transition:all 0.3s; margin-bottom:12px;
+  }
+  .btn-primary:hover { box-shadow:0 8px 25px rgba(0,102,255,0.4); transform:translateY(-1px); }
+  .btn-outline {
+    width:100%; background:transparent; border:1px solid rgba(255,51,102,0.3);
+    border-radius:14px; padding:14px; color:var(--red);
+    font-family:'Exo 2',sans-serif; font-size:14px; cursor:pointer;
+  }
+  .guarantee { text-align:center; font-size:12px; color:var(--muted); margin-top:16px; }
+
+  /* Payment history */
+  .pay-item {
+    display:flex; justify-content:space-between; align-items:center; padding:14px;
+    background:var(--card); border:1px solid var(--border); border-radius:14px; margin-bottom:8px;
+  }
+  .pay-date { font-size:13px; color:var(--muted); }
+  .pay-amount { font-family:'Orbitron',sans-serif; font-size:15px; font-weight:700; color:var(--green); }
+  .section-title {
+    font-family:'Orbitron',sans-serif; font-size:12px; font-weight:700;
+    color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; margin-top:20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="profile.html" class="back-btn">←</a>
+  <h1>OBUNA BOSHQARUVI</h1>
+</div>
+
+<div class="content">
+  <div class="sub-hero">
+    <div class="crown">👑</div>
+    <h2>PRO Obuna</h2>
+    <p>Mashinangizni to'liq nazorat qiling</p>
+  </div>
+
+  <!-- Free plan -->
+  <div class="plan-card plan-free">
+    <div class="plan-header">
+      <div>
+        <div class="plan-name">🆓 Bepul</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">Asosiy funksiyalar</div>
+      </div>
+      <div class="plan-price">
+        <div class="price-main">$0</div>
+        <div class="price-period">/ oy</div>
+      </div>
+    </div>
+    <ul class="feature-list">
+      <li class="feature-item"><div class="fi-check yes">✓</div> 1 ta mashina</li>
+      <li class="feature-item"><div class="fi-check yes">✓</div> Jonli joylashuv</li>
+      <li class="feature-item"><div class="fi-check yes">✓</div> Qulf/Ochish</li>
+      <li class="feature-item"><div class="fi-check no">✗</div><span style="color:var(--muted)">Bir nechta mashina</span></li>
+      <li class="feature-item"><div class="fi-check no">✗</div><span style="color:var(--muted)">Batafsil statistika</span></li>
+      <li class="feature-item"><div class="fi-check no">✗</div><span style="color:var(--muted)">Ovoz yozib olish</span></li>
+    </ul>
+  </div>
+
+  <!-- Pro plan -->
+  <div class="plan-card plan-pro">
+    <div class="plan-header">
+      <div>
+        <div class="best-badge">⭐ TAVSIYA ETILADI</div>
+        <div class="plan-name" style="color:var(--yellow)">PRO</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">Barcha funksiyalar</div>
+      </div>
+      <div class="plan-price">
+        <div class="price-main" style="color:var(--yellow)">$3</div>
+        <div class="price-period">/ oy</div>
+      </div>
+    </div>
+    <ul class="feature-list">
+      <li class="feature-item"><div class="fi-check yes">✓</div> Cheksiz mashinalar</li>
+      <li class="feature-item"><div class="fi-check yes">✓</div> Jonli joylashuv (1 min)</li>
+      <li class="feature-item"><div class="fi-check yes">✓</div> Dvigatel yoqish/o'chirish</li>
+      <li class="feature-item"><div class="fi-check yes">✓</div> Konditsioner boshqaruvi</li>
+      <li class="feature-item"><div class="fi-check yes">✓</div> Haftalik/oylik statistika</li>
+      <li class="feature-item"><div class="fi-check yes">✓</div> Ovoz yozib olish</li>
+      <li class="feature-item"><div class="fi-check yes">✓</div> Havo sifati monitoring</li>
+      <li class="feature-item"><div class="fi-check yes">✓</div> Safarlar tarixi</li>
+      <li class="feature-item"><div class="fi-check yes">✓</div> Ogohlantirishlar (SMS + Push)</li>
+    </ul>
+  </div>
+
+  <!-- Current status -->
+  <div class="section-title">📋 Joriy obuna holati</div>
+  <div class="status-card">
+    <div class="status-row">
+      <span>Reja</span>
+      <span class="status-val" style="color:var(--yellow)">⭐ PRO</span>
+    </div>
+    <div class="status-row">
+      <span>Boshlangan</span>
+      <span class="status-val">5-mart 2025</span>
+    </div>
+    <div class="status-row">
+      <span>Keyingi to'lov</span>
+      <span class="status-val">5-aprel 2025</span>
+    </div>
+    <div class="status-row">
+      <span>Miqdor</span>
+      <span class="status-val">$3.00</span>
+    </div>
+    <div class="status-row">
+      <span>Holat</span>
+      <span class="status-val" style="color:var(--green)">✅ Faol</span>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="managePlan()">💳 To'lov usulini boshqarish</button>
+  <button class="btn-outline" onclick="cancelSub()">Obunani bekor qilish</button>
+  <div class="guarantee">🔒 To'lovlar xavfsiz. Istalgan vaqtda bekor qiling.</div>
+
+  <!-- Payment history -->
+  <div class="section-title">💰 To'lov tarixi</div>
+  <div class="pay-item">
+    <div>
+      <div style="font-weight:600">PRO Obuna</div>
+      <div class="pay-date">5-mart 2025</div>
+    </div>
+    <div class="pay-amount">$3.00 ✓</div>
+  </div>
+  <div class="pay-item">
+    <div>
+      <div style="font-weight:600">PRO Obuna</div>
+      <div class="pay-date">5-fevral 2025</div>
+    </div>
+    <div class="pay-amount">$3.00 ✓</div>
+  </div>
+  <div class="pay-item">
+    <div>
+      <div style="font-weight:600">PRO Obuna</div>
+      <div class="pay-date">5-yanvar 2025</div>
+    </div>
+    <div class="pay-amount">$3.00 ✓</div>
+  </div>
+</div>
+
+<script>
+function managePlan() {
+  alert('To\'lov usullari: Visa, Mastercard, Payme, Click\n\nHozirgi karta: **** **** **** 4242');
+}
+function cancelSub() {
+  if(confirm('Obunani bekor qilmoqchimisiz?\nObuna muddati tugaguncha PRO funksiyalardan foydalana olasiz.')) {
+    alert('Obuna 5-aprel 2025 gacha faol bo\'lib qoladi.');
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoControl — Profil</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#050810; --card:#0d1117; --card2:#111827;
+    --accent:#00d4ff; --accent2:#0066ff; --green:#00ff88;
+    --red:#ff3366; --orange:#ff8800; --yellow:#ffd700;
+    --text:#e2e8f0; --muted:#64748b; --border:rgba(0,212,255,0.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Exo 2',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:90px; }
+  .bg-grid {
+    position:fixed; inset:0;
+    background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
+    background-size:40px 40px; pointer-events:none;
+  }
+  .content { position:relative; z-index:1; }
+
+  /* Hero */
+  .profile-hero {
+    background:linear-gradient(180deg,#0a1628 0%,var(--bg) 100%);
+    padding:40px 20px 24px; text-align:center; position:relative;
+    border-bottom:1px solid var(--border);
+  }
+  .avatar-wrap {
+    position:relative; display:inline-block; margin-bottom:14px;
+  }
+  .avatar-big {
+    width:90px; height:90px; border-radius:50%;
+    background:linear-gradient(135deg,var(--accent2),var(--accent));
+    display:flex; align-items:center; justify-content:center;
+    font-size:40px; margin:0 auto;
+    box-shadow:0 0 30px rgba(0,212,255,0.3);
+    border:3px solid rgba(0,212,255,0.4);
+  }
+  .edit-avatar {
+    position:absolute; bottom:0; right:0;
+    width:28px; height:28px; border-radius:50%;
+    background:var(--accent2); border:2px solid var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; cursor:pointer;
+  }
+  .profile-name { font-family:'Orbitron',sans-serif; font-size:20px; font-weight:700; }
+  .profile-email { font-size:13px; color:var(--muted); margin-top:5px; }
+  .pro-badge {
+    display:inline-flex; align-items:center; gap:6px;
+    margin-top:10px; padding:5px 14px; border-radius:30px;
+    background:rgba(255,215,0,0.12); border:1px solid rgba(255,215,0,0.3);
+    color:var(--yellow); font-size:12px; font-weight:700;
+  }
+
+  /* Stats row */
+  .profile-stats {
+    display:grid; grid-template-columns:1fr 1fr 1fr;
+    border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+    background:var(--card);
+  }
+  .ps-item { padding:16px; text-align:center; }
+  .ps-item:not(:last-child) { border-right:1px solid var(--border); }
+  .ps-val { font-family:'Orbitron',sans-serif; font-size:20px; font-weight:700; color:var(--accent); }
+  .ps-lbl { font-size:11px; color:var(--muted); margin-top:3px; }
+
+  /* Section */
+  .section { padding:20px; }
+  .section-title {
+    font-family:'Orbitron',sans-serif; font-size:12px; font-weight:700;
+    color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;
+  }
+
+  /* Cars */
+  .car-item {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:18px; padding:16px; margin-bottom:10px;
+    display:flex; align-items:center; gap:14px; cursor:pointer; transition:all 0.2s;
+  }
+  .car-item:hover { border-color:var(--accent); }
+  .car-item.active-car { border-color:var(--accent); background:rgba(0,212,255,0.05); }
+  .car-emoji { font-size:36px; }
+  .car-info { flex:1; }
+  .car-info .name { font-weight:600; font-size:15px; }
+  .car-info .plate { font-size:12px; color:var(--muted); margin-top:2px; }
+  .car-info .fuel-mark {
+    display:inline-block; margin-top:6px; padding:2px 8px;
+    border-radius:6px; font-size:11px; font-weight:700;
+    background:rgba(255,136,0,0.15); color:var(--orange);
+    border:1px solid rgba(255,136,0,0.3);
+  }
+  .car-status { text-align:right; }
+  .car-dot { width:10px; height:10px; border-radius:50%; margin-left:auto; margin-bottom:6px; }
+  .car-dot.on { background:var(--green); box-shadow:0 0 8px var(--green); animation:pulse 1.5s infinite; }
+  .car-dot.off { background:var(--muted); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .car-km { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; }
+
+  .add-car-btn {
+    width:100%; padding:16px; border-radius:18px;
+    border:2px dashed rgba(0,212,255,0.3); background:transparent;
+    color:var(--accent); font-family:'Exo 2',sans-serif; font-size:14px; font-weight:600;
+    cursor:pointer; transition:all 0.25s; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .add-car-btn:hover { border-color:var(--accent); background:rgba(0,212,255,0.05); }
+
+  /* Menu items */
+  .menu-list { background:var(--card); border:1px solid var(--border); border-radius:18px; overflow:hidden; }
+  .menu-item {
+    display:flex; align-items:center; gap:14px; padding:16px;
+    cursor:pointer; transition:all 0.2s; text-decoration:none; color:var(--text);
+  }
+  .menu-item:not(:last-child) { border-bottom:1px solid rgba(255,255,255,0.04); }
+  .menu-item:hover { background:rgba(255,255,255,0.03); }
+  .menu-icon {
+    width:38px; height:38px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
+  }
+  .menu-text { flex:1; }
+  .menu-label { font-size:14px; font-weight:500; }
+  .menu-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+  .menu-arrow { color:var(--muted); font-size:14px; }
+  .menu-badge {
+    padding:3px 8px; border-radius:6px; font-size:11px; font-weight:700;
+    background:rgba(0,212,255,0.15); color:var(--accent);
+  }
+
+  /* Subscription card */
+  .sub-card {
+    background:linear-gradient(135deg,#1a1000,#2a1a00);
+    border:1px solid rgba(255,215,0,0.3); border-radius:20px; padding:20px;
+    display:flex; align-items:center; gap:16px;
+  }
+  .sub-icon { font-size:40px; }
+  .sub-info { flex:1; }
+  .sub-info h3 { font-family:'Orbitron',sans-serif; font-size:15px; color:var(--yellow); }
+  .sub-info p { font-size:12px; color:var(--muted); margin-top:4px; }
+  .sub-btn {
+    padding:10px 18px; border-radius:12px;
+    background:linear-gradient(135deg,#8B6914,var(--yellow));
+    border:none; color:#000; font-weight:700; font-size:13px; cursor:pointer;
+    white-space:nowrap;
+  }
+
+  /* Logout */
+  .logout-btn {
+    width:100%; padding:16px; border-radius:16px;
+    background:rgba(255,51,102,0.1); border:1px solid rgba(255,51,102,0.3);
+    color:var(--red); font-family:'Exo 2',sans-serif; font-size:14px; font-weight:600;
+    cursor:pointer; transition:all 0.25s;
+  }
+  .logout-btn:hover { background:rgba(255,51,102,0.2); }
+
+  /* Bottom Nav */
+  .bottom-nav {
+    position:fixed; bottom:0; left:0; right:0;
+    background:rgba(13,17,23,0.97); backdrop-filter:blur(20px);
+    border-top:1px solid var(--border);
+    display:flex; padding:8px 0 12px; z-index:100;
+  }
+  .nav-item {
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+    cursor:pointer; text-decoration:none; padding:6px;
+  }
+  .nav-icon { font-size:22px; }
+  .nav-label { font-size:10px; color:var(--muted); font-weight:500; }
+  .nav-item.active .nav-label { color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="content">
+
+  <!-- Hero -->
+  <div class="profile-hero">
+    <div class="avatar-wrap">
+      <div class="avatar-big">👤</div>
+      <div class="edit-avatar">✏️</div>
+    </div>
+    <div class="profile-name" id="pName">Foydalanuvchi</div>
+    <div class="profile-email" id="pEmail">user@gmail.com</div>
+    <div class="pro-badge">⭐ PRO obuna • $3/oy</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="profile-stats">
+    <div class="ps-item">
+      <div class="ps-val">2</div>
+      <div class="ps-lbl">Mashinalar</div>
+    </div>
+    <div class="ps-item">
+      <div class="ps-val">3,240</div>
+      <div class="ps-lbl">Oy km</div>
+    </div>
+    <div class="ps-item">
+      <div class="ps-val">7</div>
+      <div class="ps-lbl">Safarlar</div>
+    </div>
+  </div>
+
+  <!-- My Cars -->
+  <div class="section">
+    <div class="section-title">🚗 Mening mashinalarim</div>
+
+    <div class="car-item active-car">
+      <div class="car-emoji">🚗</div>
+      <div class="car-info">
+        <div class="name">GM Cobalt</div>
+        <div class="plate">01 A 777 AA · 2021</div>
+        <span class="fuel-mark">AI-92</span>
+      </div>
+      <div class="car-status">
+        <div class="car-dot on"></div>
+        <div class="car-km" style="color:var(--green)">Online</div>
+      </div>
+    </div>
+
+    <div class="car-item">
+      <div class="car-emoji">🚙</div>
+      <div class="car-info">
+        <div class="name">Chevrolet Nexia 3</div>
+        <div class="plate">10 B 432 BA · 2019</div>
+        <span class="fuel-mark">AI-91</span>
+      </div>
+      <div class="car-status">
+        <div class="car-dot off"></div>
+        <div class="car-km" style="color:var(--muted)">Offline</div>
+      </div>
+    </div>
+
+    <button class="add-car-btn" onclick="window.location.href='add-car.html'">
+      ➕ Yangi mashina qo'shish
+    </button>
+  </div>
+
+  <!-- Subscription -->
+  <div class="section" style="padding-top:0">
+    <div class="section-title">💳 Obuna</div>
+    <div class="sub-card">
+      <div class="sub-icon">⭐</div>
+      <div class="sub-info">
+        <h3>PRO Obuna</h3>
+        <p>Keyingi to'lov: 5-aprel 2025<br>$3.00 / oy</p>
+      </div>
+      <button class="sub-btn" onclick="window.location.href='subscription.html'">Boshqarish</button>
+    </div>
+  </div>
+
+  <!-- Menu -->
+  <div class="section" style="padding-top:0">
+    <div class="section-title">⚙️ Sozlamalar</div>
+    <div class="menu-list">
+      <a class="menu-item" href="settings.html">
+        <div class="menu-icon" style="background:rgba(0,212,255,0.1)">🔔</div>
+        <div class="menu-text">
+          <div class="menu-label">Bildirishnomalar</div>
+          <div class="menu-sub">Push, SMS sozlamalari</div>
+        </div>
+        <span class="menu-arrow">›</span>
+      </a>
+      <a class="menu-item" href="alerts.html">
+        <div class="menu-icon" style="background:rgba(255,136,0,0.1)">⚠️</div>
+        <div class="menu-text">
+          <div class="menu-label">Ogohlantirishlar</div>
+          <div class="menu-sub">Harorat, qulf, batareya chegaralari</div>
+        </div>
+        <span class="menu-badge">3</span>
+        <span class="menu-arrow" style="margin-left:8px">›</span>
+      </a>
+      <a class="menu-item" href="#">
+        <div class="menu-icon" style="background:rgba(0,255,136,0.1)">🔒</div>
+        <div class="menu-text">
+          <div class="menu-label">Xavfsizlik</div>
+          <div class="menu-sub">Parol, 2FA</div>
+        </div>
+        <span class="menu-arrow">›</span>
+      </a>
+      <a class="menu-item" href="#">
+        <div class="menu-icon" style="background:rgba(255,51,102,0.1)">🌐</div>
+        <div class="menu-text">
+          <div class="menu-label">Til</div>
+          <div class="menu-sub">O'zbek (UZ)</div>
+        </div>
+        <span class="menu-arrow">›</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Logout -->
+  <div class="section" style="padding-top:0">
+    <button class="logout-btn" onclick="doLogout()">🚪 Chiqish</button>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span><span class="nav-label">Asosiy</span></a>
+  <a class="nav-item" href="car-control.html"><span class="nav-icon">🎮</span><span class="nav-label">Boshqaruv</span></a>
+  <a class="nav-item" href="map.html"><span class="nav-icon">🗺️</span><span class="nav-label">Xarita</span></a>
+  <a class="nav-item" href="statistics.html"><span class="nav-icon">📊</span><span class="nav-label">Statistika</span></a>
+  <a class="nav-item active" href="profile.html"><span class="nav-icon">👤</span><span class="nav-label">Profil</span></a>
+</div>
+
+<script>
+const user = JSON.parse(localStorage.getItem('autocontrol_user') || '{}');
+if(user.name) document.getElementById('pName').textContent = user.name;
+if(user.email) document.getElementById('pEmail').textContent = user.email;
+
+function doLogout() {
+  if(confirm('Chiqishni tasdiqlaysizmi?')) {
+    localStorage.removeItem('autocontrol_user');
+    window.location.href = 'login.html';
+  }
+}
+</script>
+</body>
+</html>

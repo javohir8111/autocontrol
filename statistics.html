@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoControl — Statistika</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg:#050810; --card:#0d1117; --card2:#111827;
+    --accent:#00d4ff; --accent2:#0066ff; --green:#00ff88;
+    --red:#ff3366; --orange:#ff8800; --yellow:#ffd700;
+    --text:#e2e8f0; --muted:#64748b; --border:rgba(0,212,255,0.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Exo 2',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:90px; }
+  .bg-grid {
+    position:fixed; inset:0;
+    background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
+    background-size:40px 40px; pointer-events:none;
+  }
+  .topbar {
+    display:flex; align-items:center; gap:14px; padding:16px 20px;
+    background:rgba(13,17,23,0.95); backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100;
+  }
+  .back-btn {
+    background:rgba(255,255,255,0.06); border:1px solid var(--border);
+    border-radius:10px; width:38px; height:38px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:16px; text-decoration:none; color:var(--text);
+  }
+  .topbar h1 { font-family:'Orbitron',sans-serif; font-size:15px; font-weight:700; }
+  .content { position:relative; z-index:1; padding:20px; }
+
+  /* Period tabs */
+  .period-tabs { display:flex; gap:6px; margin-bottom:20px; }
+  .tab {
+    flex:1; padding:10px; text-align:center; border-radius:12px; cursor:pointer;
+    font-size:13px; font-weight:600; transition:all 0.25s;
+    background:rgba(255,255,255,0.05); border:1px solid var(--border);
+    color:var(--muted);
+  }
+  .tab.active { background:linear-gradient(135deg,var(--accent2),var(--accent)); border-color:transparent; color:#fff; }
+
+  /* Summary cards */
+  .summary-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+  .sum-card {
+    background:var(--card); border:1px solid var(--border); border-radius:18px; padding:18px;
+  }
+  .sum-card .icon { font-size:24px; margin-bottom:8px; }
+  .sum-card .val { font-family:'Orbitron',sans-serif; font-size:24px; font-weight:700; }
+  .sum-card .lbl { font-size:12px; color:var(--muted); margin-top:4px; }
+  .sum-card .trend {
+    font-size:11px; margin-top:8px; display:flex; align-items:center; gap:4px;
+  }
+  .trend.up { color:var(--green); }
+  .trend.down { color:var(--red); }
+
+  /* Charts */
+  .chart-card {
+    background:var(--card); border:1px solid var(--border); border-radius:20px;
+    padding:20px; margin-bottom:16px;
+  }
+  .chart-title {
+    font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700;
+    color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:16px;
+  }
+
+  /* Trip list */
+  .trip-item {
+    display:flex; align-items:center; gap:14px; padding:14px;
+    background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);
+    border-radius:14px; margin-bottom:8px; cursor:pointer; transition:all 0.2s;
+  }
+  .trip-item:hover { border-color:var(--accent); background:rgba(0,212,255,0.04); }
+  .trip-icon { font-size:28px; }
+  .trip-info { flex:1; }
+  .trip-route { font-weight:600; font-size:14px; }
+  .trip-time { font-size:12px; color:var(--muted); margin-top:2px; }
+  .trip-km { font-family:'Orbitron',sans-serif; font-size:16px; font-weight:700; color:var(--accent); }
+
+  /* Bottom Nav */
+  .bottom-nav {
+    position:fixed; bottom:0; left:0; right:0;
+    background:rgba(13,17,23,0.97); backdrop-filter:blur(20px);
+    border-top:1px solid var(--border);
+    display:flex; padding:8px 0 12px; z-index:100;
+  }
+  .nav-item {
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+    cursor:pointer; text-decoration:none; padding:6px;
+  }
+  .nav-icon { font-size:22px; }
+  .nav-label { font-size:10px; color:var(--muted); font-weight:500; }
+  .nav-item.active .nav-label { color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="topbar">
+  <a href="dashboard.html" class="back-btn">←</a>
+  <h1>STATISTIKA</h1>
+</div>
+
+<div class="content">
+  <!-- Period tabs -->
+  <div class="period-tabs">
+    <div class="tab active" onclick="setPeriod(this,'day')">Bugun</div>
+    <div class="tab" onclick="setPeriod(this,'week')">Hafta</div>
+    <div class="tab" onclick="setPeriod(this,'month')">Oy</div>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-grid">
+    <div class="sum-card">
+      <div class="icon">🛣️</div>
+      <div class="val" id="totalKm">124</div>
+      <div class="lbl">Jami km</div>
+      <div class="trend up">↑ 12% kechadan</div>
+    </div>
+    <div class="sum-card">
+      <div class="icon">⛽</div>
+      <div class="val" id="fuelUsed" style="color:var(--orange)">10.2L</div>
+      <div class="lbl">Yoqilg'i sarfi</div>
+      <div class="trend down">↓ 3% tejaldi</div>
+    </div>
+    <div class="sum-card">
+      <div class="icon">⏱️</div>
+      <div class="val" id="driveTime" style="color:var(--green)">3h 12m</div>
+      <div class="lbl">Haydash vaqti</div>
+      <div class="trend up">↑ 45 min</div>
+    </div>
+    <div class="sum-card">
+      <div class="icon">💰</div>
+      <div class="val" id="fuelCost" style="color:var(--yellow)">88K</div>
+      <div class="lbl">Yoqilg'i xarajat</div>
+      <div class="lbl" style="font-size:10px;margin-top:2px;">so'm</div>
+    </div>
+  </div>
+
+  <!-- KM Chart -->
+  <div class="chart-card">
+    <div class="chart-title">📊 Kunlik yurilgan km</div>
+    <canvas id="kmChart" height="160"></canvas>
+  </div>
+
+  <!-- Fuel Chart -->
+  <div class="chart-card">
+    <div class="chart-title">⛽ Yoqilg'i sarfi (L/100km)</div>
+    <canvas id="fuelChart" height="140"></canvas>
+  </div>
+
+  <!-- Recent trips -->
+  <div class="chart-title" style="margin-bottom:12px;">🕐 Bugungi safarlar</div>
+  <div id="tripList">
+    <div class="trip-item">
+      <div class="trip-icon">🏠→🏢</div>
+      <div class="trip-info">
+        <div class="trip-route">Uy → Ish joyi</div>
+        <div class="trip-time">08:15 – 08:47 • 32 daqiqa</div>
+      </div>
+      <div class="trip-km">24km</div>
+    </div>
+    <div class="trip-item">
+      <div class="trip-icon">🏢→🏬</div>
+      <div class="trip-info">
+        <div class="trip-route">Ish joyi → Do'kon</div>
+        <div class="trip-time">13:00 – 13:22 • 22 daqiqa</div>
+      </div>
+      <div class="trip-km">18km</div>
+    </div>
+    <div class="trip-item">
+      <div class="trip-icon">🏬→🏠</div>
+      <div class="trip-info">
+        <div class="trip-route">Do'kon → Uy</div>
+        <div class="trip-time">18:30 – 19:25 • 55 daqiqa</div>
+      </div>
+      <div class="trip-km">82km</div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span><span class="nav-label">Asosiy</span></a>
+  <a class="nav-item" href="car-control.html"><span class="nav-icon">🎮</span><span class="nav-label">Boshqaruv</span></a>
+  <a class="nav-item" href="map.html"><span class="nav-icon">🗺️</span><span class="nav-label">Xarita</span></a>
+  <a class="nav-item active" href="statistics.html"><span class="nav-icon">📊</span><span class="nav-label">Statistika</span></a>
+  <a class="nav-item" href="profile.html"><span class="nav-icon">👤</span><span class="nav-label">Profil</span></a>
+</div>
+
+<script>
+const chartDefaults = {
+  responsive: true,
+  plugins: { legend: { display: false } },
+  scales: {
+    x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', font: { size: 11 } } },
+    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', font: { size: 11 } } }
+  }
+};
+
+// KM Chart
+const kmCtx = document.getElementById('kmChart').getContext('2d');
+const kmChart = new Chart(kmCtx, {
+  type: 'bar',
+  data: {
+    labels: ['Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan', 'Yak'],
+    datasets: [{
+      data: [95, 140, 88, 162, 110, 45, 124],
+      backgroundColor: 'rgba(0,102,255,0.5)',
+      borderColor: '#0066ff',
+      borderWidth: 2, borderRadius: 8,
+      hoverBackgroundColor: 'rgba(0,212,255,0.7)'
+    }]
+  },
+  options: { ...chartDefaults }
+});
+
+// Fuel Chart
+const fuelCtx = document.getElementById('fuelChart').getContext('2d');
+const fuelChart = new Chart(fuelCtx, {
+  type: 'line',
+  data: {
+    labels: ['Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan', 'Yak'],
+    datasets: [{
+      data: [9.1, 8.5, 9.8, 7.9, 8.2, 10.1, 8.2],
+      borderColor: '#ff8800',
+      backgroundColor: 'rgba(255,136,0,0.1)',
+      borderWidth: 2, tension: 0.4, fill: true,
+      pointBackgroundColor: '#ff8800', pointRadius: 4
+    }]
+  },
+  options: { ...chartDefaults }
+});
+
+const periodData = {
+  day: { km:'124', fuel:'10.2L', time:'3h 12m', cost:'88K' },
+  week: { km:'782', fuel:'64.1L', time:'21h 40m', cost:'550K' },
+  month: { km:'3240', fuel:'265L', time:'89h', cost:'2.3M' }
+};
+
+const weekKm = [95,140,88,162,110,45,124];
+const monthKm = [820,750,900,770];
+
+function setPeriod(el, period) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const d = periodData[period];
+  document.getElementById('totalKm').textContent = d.km;
+  document.getElementById('fuelUsed').textContent = d.fuel;
+  document.getElementById('driveTime').textContent = d.time;
+  document.getElementById('fuelCost').textContent = d.cost;
+  if(period==='month') {
+    kmChart.data.labels = ['1-hafta','2-hafta','3-hafta','4-hafta'];
+    kmChart.data.datasets[0].data = monthKm;
+  } else {
+    kmChart.data.labels = ['Dush','Sesh','Chor','Pay','Jum','Shan','Yak'];
+    kmChart.data.datasets[0].data = weekKm;
+  }
+  kmChart.update();
+}
+</script>
+</body>
+</html>

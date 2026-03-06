@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoControl Pro — Ro'yxatdan o'tish</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+         :root {
+            --bg: #050810;
+            --surface: #0d1117;
+            --card: #111827;
+            --accent: #00d4ff;
+            --accent2: #0066ff;
+            --green: #00ff88;
+            --red: #ff3366;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --border: rgba(0, 212, 255, 0.15);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+        
+        .bg-glow {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.08) 0%, transparent 70%);
+            top: -150px;
+            right: -150px;
+            pointer-events: none;
+        }
+        
+        .wrap {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 460px;
+            animation: fadeUp 0.7s ease;
+        }
+        
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px)
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 28px;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+        
+        .logo h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            display: inline-block;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 36px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .steps {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+        
+        .step {
+            flex: 1;
+            height: 4px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            transition: background 0.4s;
+        }
+        
+        .step.active {
+            background: linear-gradient(90deg, var(--accent2), var(--accent));
+        }
+        
+        .step-label {
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .input-wrap {
+            position: relative;
+        }
+        
+        .input-wrap .icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: var(--muted);
+            pointer-events: none;
+        }
+        
+        .input-wrap input,
+        .input-wrap select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 13px 13px 13px 42px;
+            color: var(--text);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .input-wrap select {
+            color: var(--text);
+        }
+        
+        .input-wrap select option {
+            background: var(--card);
+        }
+        
+        .input-wrap input:focus,
+        .input-wrap select:focus {
+            border-color: var(--accent);
+            background: rgba(0, 212, 255, 0.05);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+        
+        .row2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        
+        .terms {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 22px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        .terms input {
+            accent-color: var(--accent);
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        
+        .terms a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(0, 102, 255, 0.4);
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            color: var(--muted);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+        
+        .login-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .success-screen {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        
+        .success-icon {
+            font-size: 60px;
+            margin-bottom: 16px;
+            animation: bounce 0.6s ease;
+        }
+        
+        @keyframes bounce {
+            0% {
+                transform: scale(0)
+            }
+            60% {
+                transform: scale(1.2)
+            }
+            100% {
+                transform: scale(1)
+            }
+        }
+        
+        .success-screen h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            color: var(--green);
+            margin-bottom: 8px;
+        }
+        
+        .success-screen p {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .strength-bar {
+            height: 4px;
+            border-radius: 4px;
+            margin-top: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: all 0.3s;
+            width: 0%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <div class="wrap">
+        <div class="logo">
+            <div class="logo-icon">🚗</div>
+            <h1>AUTOCONTROL</h1>
+        </div>
+
+        <div class="card" id="mainCard">
+            <div class="steps">
+                <div class="step active" id="s1"></div>
+                <div class="step" id="s2"></div>
+                <div class="step" id="s3"></div>
+            </div>
+            <div class="step-label" id="stepLabel">1-qadam: Shaxsiy ma'lumotlar</div>
+
+            <!-- Page 1 -->
+            <div class="page active" id="p1">
+                <div class="row2">
+                    <div class="form-group">
+                        <label>Ism</label>
+                        <div class="input-wrap">
+                            <span class="icon">👤</span>
+                            <input type="text" id="fname" placeholder="Jasur">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Familiya</label>
+                        <div class="input-wrap">
+                            <span class="icon">👤</span>
+                            <input type="text" id="lname" placeholder="Toshmatov">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Telefon raqam</label>
+                    <div class="input-wrap">
+                        <span class="icon">📱</span>
+                        <input type="tel" id="phone" placeholder="+998 90 123 45 67">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Shahar</label>
+                    <div class="input-wrap">
+                        <span class="icon">🏙️</span>
+                        <select id="city">
+            <option value="">Shaharni tanlang</option>
+            <option>Toshkent</option><option>Samarqand</option>
+            <option>Buxoro</option><option>Namangan</option>
+            <option>Andijon</option><option>Farg'ona</option>
+            <option>Nukus</option>
+          </select>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="next(2)">KEYINGISI →</button>
+            </div>
+
+            <!-- Page 2 -->
+            <div class="page" id="p2">
+                <div class="form-group">
+                    <label>Email manzil</label>
+                    <div class="input-wrap">
+                        <span class="icon">✉️</span>
+                        <input type="email" id="email" placeholder="jasur@gmail.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Parol</label>
+                    <div class="input-wrap">
+                        <span class="icon">🔒</span>
+                        <input type="password" id="pass" placeholder="Kamida 8 ta belgi" oninput="checkStrength(this.value)">
+                    </div>
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Parolni tasdiqlang</label>
+                    <div class="input-wrap">
+                        <span class="icon">🔒</span>
+                        <input type="password" id="pass2" placeholder="••••••••">
+                    </div>
+                </div>
+                <button class="btn-outline" onclick="next(1)">← Orqaga</button>
+                <button class="btn-primary" onclick="next(3)">KEYINGISI →</button>
+            </div>
+
+            <!-- Page 3 -->
+            <div class="page" id="p3">
+                <div class="form-group">
+                    <label>Obuna rejasi</label>
+                    <div style="display:grid;gap:10px;margin-top:8px;">
+                        <label style="display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--border);border-radius:12px;cursor:pointer;" id="plan-free">
+            <input type="radio" name="plan" value="free" checked style="accent-color:var(--accent)">
+            <div>
+              <div style="font-weight:600;font-size:14px;">🆓 Bepul</div>
+              <div style="font-size:12px;color:var(--muted);">1 mashina, asosiy funksiyalar</div>
+            </div>
+          </label>
+                        <label style="display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--accent);border-radius:12px;cursor:pointer;background:rgba(0,212,255,0.05);" id="plan-pro">
+            <input type="radio" name="plan" value="pro" style="accent-color:var(--accent)">
+            <div>
+              <div style="font-weight:600;font-size:14px;">⭐ PRO — $3/oy</div>
+              <div style="font-size:12px;color:var(--muted);">Cheksiz mashina, barcha funksiyalar, statistika</div>
+            </div>
+          </label>
+                    </div>
+                </div>
+                <div class="terms">
+                    <input type="checkbox" id="agree">
+                    <span>Men <a href="#">Foydalanish shartlari</a> va <a href="#">Maxfiylik siyosati</a> bilan roziman</span>
+                </div>
+                <button class="btn-outline" onclick="next(2)">← Orqaga</button>
+                <button class="btn-primary" onclick="doRegister()">AKKAUNT YARATISH ✓</button>
+            </div>
+
+            <!-- Success -->
+            <div class="success-screen" id="successScreen">
+                <div class="success-icon">🎉</div>
+                <h2>Muvaffaqiyatli!</h2>
+                <p>Akkauntingiz yaratildi. Endi mashinangizni boshqarishni boshlashingiz mumkin!</p>
+                <button class="btn-primary" onclick="window.location.href='dashboard.html'">BOSHQARUV PANELIGA →</button>
+            </div>
+        </div>
+
+        <div class="login-link">
+            Akkaunt bor? <a href="index.html">Kirish</a>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+
+        function next(pg) {
+            document.getElementById('p' + currentPage).classList.remove('active');
+            currentPage = pg;
+            document.getElementById('p' + currentPage).classList.add('active');
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById('s' + i).classList.toggle('active', i <= pg);
+            }
+            const labels = ['', '1-qadam: Shaxsiy ma\'lumotlar', '2-qadam: Kirish ma\'lumotlari', '3-qadam: Obuna tanlash'];
+            document.getElementById('stepLabel').textContent = labels[pg];
+        }
+
+        function checkStrength(v) {
+            const f = document.getElementById('strengthFill');
+            let s = 0;
+            if (v.length >= 8) s += 25;
+            if (/[A-Z]/.test(v)) s += 25;
+            if (/[0-9]/.test(v)) s += 25;
+            if (/[^A-Za-z0-9]/.test(v)) s += 25;
+            f.style.width = s + '%';
+            f.style.background = s <= 25 ? '#ff3366' : s <= 50 ? '#ffa500' : s <= 75 ? '#ffff00' : '#00ff88';
+        }
+
+        function doRegister() {
+            if (!document.getElementById('agree').checked) {
+                alert('Foydalanish shartlari bilan rozilik talab etiladi!');
+                return;
+            }
+            document.getElementById('p3').style.display = 'none';
+            document.getElementById('successScreen').style.display = 'block';
+            document.querySelector('.steps').style.display = 'none';
+            document.getElementById('stepLabel').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

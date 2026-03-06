@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoControl Pro — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#050810; --card:#0d1117; --card2:#111827;
+    --accent:#00d4ff; --accent2:#0066ff; --green:#00ff88;
+    --red:#ff3366; --orange:#ff8800; --yellow:#ffd700;
+    --text:#e2e8f0; --muted:#64748b; --border:rgba(0,212,255,0.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Exo 2',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:80px; }
+  .bg-grid {
+    position:fixed; inset:0;
+    background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
+    background-size:40px 40px; pointer-events:none; z-index:0;
+  }
+  .content { position:relative; z-index:1; }
+
+  /* Top Bar */
+  .topbar {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 20px;
+    background:rgba(13,17,23,0.95); backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border);
+    position:sticky; top:0; z-index:100;
+  }
+  .topbar-logo {
+    font-family:'Orbitron',sans-serif; font-size:16px; font-weight:900;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .topbar-right { display:flex; align-items:center; gap:14px; }
+  .notif-btn {
+    background:rgba(255,255,255,0.06); border:1px solid var(--border);
+    border-radius:10px; width:38px; height:38px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:16px; transition:all 0.2s; position:relative;
+  }
+  .notif-btn:hover { border-color:var(--accent); }
+  .badge {
+    position:absolute; top:-4px; right:-4px;
+    background:var(--red); color:#fff;
+    border-radius:50%; width:16px; height:16px;
+    font-size:9px; display:flex; align-items:center; justify-content:center;
+    font-weight:700;
+  }
+  .avatar {
+    width:38px; height:38px; border-radius:10px;
+    background:linear-gradient(135deg,var(--accent2),var(--accent));
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; cursor:pointer;
+  }
+
+  /* Hero Car Card */
+  .hero-section { padding:20px 20px 0; }
+  .greeting { font-size:13px; color:var(--muted); margin-bottom:4px; }
+  .greeting strong { color:var(--text); }
+  .section-title {
+    font-family:'Orbitron',sans-serif; font-size:16px; font-weight:700;
+    margin-bottom:14px; color:var(--text);
+  }
+  .car-selector {
+    display:flex; gap:10px; overflow-x:auto; padding-bottom:4px;
+    scrollbar-width:none; margin-bottom:16px;
+  }
+  .car-selector::-webkit-scrollbar { display:none; }
+  .car-chip {
+    flex-shrink:0; padding:8px 16px;
+    background:rgba(255,255,255,0.05); border:1px solid var(--border);
+    border-radius:30px; cursor:pointer; font-size:13px; transition:all 0.2s;
+    white-space:nowrap;
+  }
+  .car-chip.active {
+    background:linear-gradient(135deg,var(--accent2),var(--accent));
+    border-color:transparent; color:#fff; font-weight:600;
+  }
+
+  .main-car-card {
+    background:linear-gradient(135deg,#0a1628,#0d1f3c);
+    border:1px solid var(--border); border-radius:24px;
+    padding:24px; margin-bottom:16px;
+    position:relative; overflow:hidden;
+  }
+  .main-car-card::before {
+    content:''; position:absolute;
+    top:-40px; right:-40px;
+    width:200px; height:200px; border-radius:50%;
+    background:radial-gradient(circle,rgba(0,102,255,0.2) 0%,transparent 70%);
+  }
+  .car-header {
+    display:flex; justify-content:space-between; align-items:flex-start;
+    margin-bottom:20px;
+  }
+  .car-name { font-family:'Orbitron',sans-serif; font-size:20px; font-weight:700; }
+  .car-sub { font-size:13px; color:var(--muted); margin-top:4px; }
+  .status-pill {
+    padding:6px 14px; border-radius:30px; font-size:12px; font-weight:700;
+    display:flex; align-items:center; gap:6px;
+  }
+  .status-pill.online { background:rgba(0,255,136,0.15); color:var(--green); border:1px solid rgba(0,255,136,0.3); }
+  .status-pill.offline { background:rgba(255,51,102,0.15); color:var(--red); border:1px solid rgba(255,51,102,0.3); }
+  .pulse { width:8px; height:8px; border-radius:50%; background:var(--green); animation:pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  .car-emoji { font-size:72px; text-align:center; margin:10px 0; filter:drop-shadow(0 0 20px rgba(0,212,255,0.3)); }
+
+  .sensors-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .sensor-item {
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06);
+    border-radius:14px; padding:14px;
+  }
+  .sensor-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
+  .sensor-value { font-family:'Orbitron',sans-serif; font-size:20px; font-weight:700; }
+  .sensor-value.hot { color:var(--red); }
+  .sensor-value.warm { color:var(--orange); }
+  .sensor-value.ok { color:var(--green); }
+  .sensor-sub { font-size:11px; color:var(--muted); margin-top:2px; }
+
+  /* Quick Actions */
+  .section { padding:0 20px; margin-bottom:20px; }
+  .quick-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .quick-btn {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:14px 8px;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    cursor:pointer; transition:all 0.25s; text-decoration:none;
+  }
+  .quick-btn:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,212,255,0.15); }
+  .quick-btn.active-action { border-color:var(--green); background:rgba(0,255,136,0.06); }
+  .quick-btn.danger { border-color:rgba(255,51,102,0.3); }
+  .quick-btn.danger:hover { border-color:var(--red); box-shadow:0 8px 20px rgba(255,51,102,0.15); }
+  .qb-icon { font-size:24px; }
+  .qb-label { font-size:11px; color:var(--muted); text-align:center; font-weight:500; }
+
+  /* Lock control */
+  .lock-card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:20px; padding:20px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .lock-info { display:flex; align-items:center; gap:14px; }
+  .lock-icon { font-size:36px; }
+  .lock-text h3 { font-size:15px; font-weight:600; margin-bottom:3px; }
+  .lock-text p { font-size:12px; color:var(--muted); }
+  .toggle-switch {
+    width:56px; height:28px; background:rgba(255,255,255,0.1);
+    border-radius:14px; position:relative; cursor:pointer; transition:background 0.3s;
+    border:none; flex-shrink:0;
+  }
+  .toggle-switch.on { background:var(--green); }
+  .toggle-switch::after {
+    content:''; position:absolute;
+    width:22px; height:22px; border-radius:50%;
+    background:#fff; top:3px; left:3px; transition:transform 0.3s;
+    box-shadow:0 2px 5px rgba(0,0,0,0.3);
+  }
+  .toggle-switch.on::after { transform:translateX(28px); }
+
+  /* Stats mini */
+  .stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .stat-card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:16px; text-align:center;
+  }
+  .stat-val { font-family:'Orbitron',sans-serif; font-size:22px; font-weight:700; color:var(--accent); }
+  .stat-lbl { font-size:11px; color:var(--muted); margin-top:4px; }
+
+  /* Weather bar */
+  .weather-bar {
+    background:linear-gradient(135deg,#0a1628,#0d1f3c);
+    border:1px solid var(--border); border-radius:20px; padding:16px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .weather-left { display:flex; align-items:center; gap:12px; }
+  .weather-icon { font-size:32px; }
+  .weather-city { font-size:12px; color:var(--muted); }
+  .weather-temp { font-family:'Orbitron',sans-serif; font-size:22px; font-weight:700; }
+  .aqi-pill {
+    padding:6px 14px; border-radius:30px; font-size:12px; font-weight:700;
+  }
+  .aqi-good { background:rgba(0,255,136,0.15); color:var(--green); }
+  .aqi-moderate { background:rgba(255,136,0,0.15); color:var(--orange); }
+
+  /* Bottom Nav */
+  .bottom-nav {
+    position:fixed; bottom:0; left:0; right:0;
+    background:rgba(13,17,23,0.97); backdrop-filter:blur(20px);
+    border-top:1px solid var(--border);
+    display:flex; padding:8px 0 12px; z-index:100;
+  }
+  .nav-item {
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+    cursor:pointer; text-decoration:none; transition:all 0.2s; padding:6px;
+  }
+  .nav-icon { font-size:22px; }
+  .nav-label { font-size:10px; color:var(--muted); font-weight:500; }
+  .nav-item.active .nav-label { color:var(--accent); }
+  .nav-item.active .nav-icon { filter:drop-shadow(0 0 6px var(--accent)); }
+
+  .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .see-all { font-size:12px; color:var(--accent); text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="content">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-logo">⚡ AUTOCONTROL</div>
+    <div class="topbar-right">
+      <div class="notif-btn" onclick="window.location.href='notifications.html'">
+        🔔<div class="badge">3</div>
+      </div>
+      <div class="avatar" onclick="window.location.href='profile.html'">👤</div>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero-section">
+    <p class="greeting">Xush kelibsiz, <strong id="userName">Foydalanuvchi</strong> 👋</p>
+
+    <div class="car-selector" id="carSelector">
+      <div class="car-chip active">🚗 Cobalt 01</div>
+      <div class="car-chip">🚙 Nexia 3</div>
+      <div class="car-chip">➕ Qo'shish</div>
+    </div>
+
+    <div class="main-car-card">
+      <div class="car-header">
+        <div>
+          <div class="car-name">GM Cobalt</div>
+          <div class="car-sub">01 A 777 AA • 2021</div>
+        </div>
+        <div class="status-pill online">
+          <div class="pulse"></div> Online
+        </div>
+      </div>
+
+      <div class="car-emoji">🚗</div>
+
+      <div class="sensors-grid">
+        <div class="sensor-item">
+          <div class="sensor-label">🌡️ Motor harorati</div>
+          <div class="sensor-value warm" id="engineTemp">87°C</div>
+          <div class="sensor-sub">Normal holat</div>
+        </div>
+        <div class="sensor-item">
+          <div class="sensor-label">❄️ Salon harorati</div>
+          <div class="sensor-value ok" id="cabinTemp">22°C</div>
+          <div class="sensor-sub">Qulay</div>
+        </div>
+        <div class="sensor-item">
+          <div class="sensor-label">🔋 Akkumulyator</div>
+          <div class="sensor-value ok" id="batteryVal">94%</div>
+          <div class="sensor-sub">12.6V</div>
+        </div>
+        <div class="sensor-item">
+          <div class="sensor-label">⛽ Yoqilg'i</div>
+          <div class="sensor-value ok" id="fuelVal">68%</div>
+          <div class="sensor-sub">AI-92 • ~340km</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="section">
+    <div class="section-title">Tezkor boshqaruv</div>
+    <div class="quick-grid">
+      <a class="quick-btn" href="car-control.html">
+        <span class="qb-icon">🎮</span>
+        <span class="qb-label">Boshqaruv</span>
+      </a>
+      <a class="quick-btn" href="map.html">
+        <span class="qb-icon">📍</span>
+        <span class="qb-label">Joylashuv</span>
+      </a>
+      <a class="quick-btn" href="statistics.html">
+        <span class="qb-icon">📊</span>
+        <span class="qb-label">Statistika</span>
+      </a>
+      <a class="quick-btn" href="fuel-log.html">
+        <span class="qb-icon">⛽</span>
+        <span class="qb-label">Yoqilg'i</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Lock -->
+  <div class="section">
+    <div class="lock-card">
+      <div class="lock-info">
+        <div class="lock-icon" id="lockIcon">🔒</div>
+        <div class="lock-text">
+          <h3 id="lockTitle">Mashina qulflangan</h3>
+          <p id="lockSub">Bosing — qulfni oching</p>
+        </div>
+      </div>
+      <button class="toggle-switch" id="lockToggle" onclick="toggleLock()"></button>
+    </div>
+  </div>
+
+  <!-- Engine control -->
+  <div class="section">
+    <div class="section-title">Dvigatel</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <button class="quick-btn" style="flex-direction:row;justify-content:center;gap:10px;padding:16px;" onclick="startEngine()">
+        <span style="font-size:22px;">🔑</span>
+        <span style="color:var(--green);font-weight:600;font-size:14px;">Yoqish</span>
+      </button>
+      <button class="quick-btn danger" style="flex-direction:row;justify-content:center;gap:10px;padding:16px;" onclick="stopEngine()">
+        <span style="font-size:22px;">⏹️</span>
+        <span style="color:var(--red);font-weight:600;font-size:14px;">O'chirish</span>
+      </button>
+    </div>
+    <div id="engineStatus" style="text-align:center;margin-top:10px;font-size:13px;color:var(--muted);"></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title" style="margin:0;">Bugungi statistika</div>
+      <a href="statistics.html" class="see-all">Barchasi →</a>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-val">124</div>
+        <div class="stat-lbl">km bugun</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--orange);">8.2</div>
+        <div class="stat-lbl">L/100km</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--green);">3h</div>
+        <div class="stat-lbl">Yurish vaqti</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weather -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title" style="margin:0;">Toshkent havosi</div>
+      <a href="weather-air.html" class="see-all">Batafsil →</a>
+    </div>
+    <div class="weather-bar">
+      <div class="weather-left">
+        <div class="weather-icon">🌤️</div>
+        <div>
+          <div class="weather-city">Toshkent, O'zbekiston</div>
+          <div class="weather-temp">+18°C</div>
+        </div>
+      </div>
+      <div>
+        <div class="aqi-pill aqi-moderate">AQI: 78 😐</div>
+        <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;">O'rtacha</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+  <a class="nav-item active" href="dashboard.html">
+    <span class="nav-icon">🏠</span><span class="nav-label">Asosiy</span>
+  </a>
+  <a class="nav-item" href="car-control.html">
+    <span class="nav-icon">🎮</span><span class="nav-label">Boshqaruv</span>
+  </a>
+  <a class="nav-item" href="map.html">
+    <span class="nav-icon">🗺️</span><span class="nav-label">Xarita</span>
+  </a>
+  <a class="nav-item" href="statistics.html">
+    <span class="nav-icon">📊</span><span class="nav-label">Statistika</span>
+  </a>
+  <a class="nav-item" href="profile.html">
+    <span class="nav-icon">👤</span><span class="nav-label">Profil</span>
+  </a>
+</div>
+
+<script>
+// User name
+const user = JSON.parse(localStorage.getItem('autocontrol_user') || '{}');
+if(user.name) document.getElementById('userName').textContent = user.name;
+
+// Lock toggle
+let locked = true;
+function toggleLock() {
+  locked = !locked;
+  const t = document.getElementById('lockToggle');
+  const i = document.getElementById('lockIcon');
+  const ti = document.getElementById('lockTitle');
+  const sub = document.getElementById('lockSub');
+  t.classList.toggle('on', !locked);
+  i.textContent = locked ? '🔒' : '🔓';
+  ti.textContent = locked ? 'Mashina qulflangan' : 'Mashina ochiq';
+  sub.textContent = locked ? 'Bosing — qulfni oching' : 'Bosing — qulflang';
+}
+
+// Engine
+let engineOn = false;
+function startEngine() {
+  engineOn = true;
+  document.getElementById('engineStatus').innerHTML = '<span style="color:var(--green)">✅ Dvigatel yoqildi! Isib chiqmoqda...</span>';
+  setTimeout(()=>{
+    document.getElementById('engineTemp').textContent = '94°C';
+  }, 2000);
+}
+function stopEngine() {
+  engineOn = false;
+  document.getElementById('engineStatus').innerHTML = '<span style="color:var(--red)">⏹️ Dvigatel o\'chirildi</span>';
+}
+
+// Live update sensors (demo)
+setInterval(()=>{
+  const t = 85 + Math.floor(Math.random()*8);
+  document.getElementById('engineTemp').textContent = t + '°C';
+  document.getElementById('engineTemp').className = 'sensor-value ' + (t>95?'hot':t>88?'warm':'ok');
+}, 5000);
+</script>
+</body>
+</html>

@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AutoControl Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --gold: #c9a84c;
+            --gold2: #f5dc88;
+            --gold3: #7a5a10;
+            --dark: #03050a;
+            --text: #ede8d8;
+            --muted: rgba(237, 232, 216, 0.42);
+            --border: rgba(201, 168, 76, 0.22);
+        }
+        
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--dark);
+        }
+        
+        #c {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .vignette {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 20%, rgba(3, 5, 10, .55) 70%, rgba(3, 5, 10, .92) 100%);
+        }
+        
+        .noise {
+            position: fixed;
+            inset: -50%;
+            width: 200%;
+            height: 200%;
+            z-index: 3;
+            pointer-events: none;
+            opacity: .025;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+            animation: noiseA .4s steps(1) infinite;
+        }
+        
+        @keyframes noiseA {
+            0% {
+                transform: translate(0, 0)
+            }
+            25% {
+                transform: translate(-3%, 2%)
+            }
+            50% {
+                transform: translate(2%, -3%)
+            }
+            75% {
+                transform: translate(-2%, 3%)
+            }
+            100% {
+                transform: translate(3%, -2%)
+            }
+        }
+        /* TOP BAR */
+        
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: clamp(16px, 3vw, 28px) clamp(20px, 5vw, 56px);
+            opacity: 0;
+            animation: fsd .9s .4s cubic-bezier(.16, 1, .3, 1) forwards;
+        }
+        
+        @keyframes fsd {
+            from {
+                opacity: 0;
+                transform: translateY(-16px)
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+        
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 12px var(--gold);
+            animation: lp 2.4s ease-in-out infinite;
+        }
+        
+        @keyframes lp {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1)
+            }
+            50% {
+                opacity: .4;
+                transform: scale(.6)
+            }
+        }
+        
+        .logo-text {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(10px, 1.2vw, 12px);
+            font-weight: 700;
+            letter-spacing: clamp(4px, 0.8vw, 8px);
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+        
+        .topnav {
+            display: flex;
+            gap: clamp(16px, 3vw, 32px);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(9px, 1vw, 11px);
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        
+        .topnav span {
+            cursor: pointer;
+            transition: color .3s;
+        }
+        
+        .topnav span:hover {
+            color: var(--gold);
+        }
+        
+        @media(max-width:480px) {
+            .topnav {
+                display: none;
+            }
+        }
+        /* BOTTOM BAR */
+        
+        .bottombar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: clamp(14px, 2.5vw, 22px) clamp(20px, 5vw, 56px);
+            border-top: 1px solid rgba(201, 168, 76, .07);
+            opacity: 0;
+            animation: fsu .9s 1.6s cubic-bezier(.16, 1, .3, 1) forwards;
+        }
+        
+        @keyframes fsu {
+            from {
+                opacity: 0;
+                transform: translateY(16px)
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+        
+        .copy {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(9px, .9vw, 10px);
+            letter-spacing: 2px;
+            color: rgba(237, 232, 216, .18);
+            text-transform: uppercase;
+        }
+        
+        .statusrow {
+            display: flex;
+            align-items: center;
+            gap: clamp(12px, 2vw, 20px);
+        }
+        
+        .statbadge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(9px, .9vw, 10px);
+            letter-spacing: 2px;
+            color: rgba(237, 232, 216, .28);
+            text-transform: uppercase;
+        }
+        
+        .dg {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #00e87a;
+            box-shadow: 0 0 6px #00e87a;
+            animation: lp 2s infinite;
+        }
+        
+        .dgo {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 6px var(--gold);
+        }
+        /* BRAND left */
+        
+        .brand {
+            position: fixed;
+            left: clamp(20px, 5vw, 80px);
+            bottom: clamp(80px, 12vh, 140px);
+            z-index: 11;
+            pointer-events: none;
+            opacity: 0;
+            animation: bi 1.2s .6s cubic-bezier(.16, 1, .3, 1) forwards;
+        }
+        
+        @keyframes bi {
+            from {
+                opacity: 0;
+                transform: translateX(-30px)
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+        
+        .b-eyebrow {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(9px, 1vw, 11px);
+            font-weight: 600;
+            letter-spacing: clamp(3px, .6vw, 5px);
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        
+        .b-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(44px, 7vw, 88px);
+            font-weight: 300;
+            line-height: .88;
+            color: var(--text);
+        }
+        
+        .b-title b {
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold3), var(--gold), var(--gold2), var(--gold));
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gs 5s linear infinite;
+        }
+        
+        @keyframes gs {
+            0% {
+                background-position: 0% 50%
+            }
+            100% {
+                background-position: 300% 50%
+            }
+        }
+        
+        .b-line {
+            width: clamp(50px, 6vw, 80px);
+            height: 1px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+            margin: clamp(14px, 2vw, 24px) 0;
+        }
+        
+        .b-sub {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(11px, 1.2vw, 14px);
+            font-weight: 300;
+            letter-spacing: clamp(2px, .4vw, 4px);
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        
+        .b-kpis {
+            display: flex;
+            gap: clamp(20px, 3vw, 40px);
+            margin-top: clamp(16px, 2.5vw, 28px);
+        }
+        
+        .kpi-n {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(22px, 3vw, 34px);
+            font-weight: 600;
+            color: var(--gold);
+        }
+        
+        .kpi-l {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(9px, .9vw, 10px);
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        
+        @media(max-width:768px) {
+            .brand {
+                display: none;
+            }
+        }
+        /* CARD */
+        
+        .ui {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 clamp(20px, 5vw, 80px);
+        }
+        
+        @media(max-width:768px) {
+            .ui {
+                justify-content: center;
+                align-items: flex-end;
+                padding: 0 0 clamp(72px, 14vh, 110px);
+            }
+        }
+        
+        .card-wrap {
+            width: 100%;
+            max-width: clamp(300px, 90vw, 420px);
+            opacity: 0;
+            animation: ci 1.2s 1s cubic-bezier(.16, 1, .3, 1) forwards;
+        }
+        
+        @keyframes ci {
+            from {
+                opacity: 0;
+                transform: translateY(36px) scale(.97)
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1)
+            }
+        }
+        
+        .card {
+            background: linear-gradient(145deg, rgba(201, 168, 76, .05), rgba(255, 255, 255, .025), rgba(201, 168, 76, .05));
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: clamp(28px, 5vw, 48px) clamp(24px, 4.5vw, 44px);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(24px);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: .5;
+        }
+        
+        .ca {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+        }
+        
+        .ca-tl {
+            top: -1px;
+            left: -1px;
+            border-top: 1.5px solid var(--gold);
+            border-left: 1.5px solid var(--gold);
+        }
+        
+        .ca-tr {
+            top: -1px;
+            right: -1px;
+            border-top: 1.5px solid var(--gold);
+            border-right: 1.5px solid var(--gold);
+        }
+        
+        .ca-bl {
+            bottom: -1px;
+            left: -1px;
+            border-bottom: 1.5px solid var(--gold);
+            border-left: 1.5px solid var(--gold);
+        }
+        
+        .ca-br {
+            bottom: -1px;
+            right: -1px;
+            border-bottom: 1.5px solid var(--gold);
+            border-right: 1.5px solid var(--gold);
+        }
+        
+        .cglow {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            height: 200px;
+            pointer-events: none;
+            background: radial-gradient(ellipse, rgba(201, 168, 76, .07) 0%, transparent 70%);
+        }
+        
+        .ctag {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 4px;
+            color: var(--gold);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .ctag::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(201, 168, 76, .35), transparent);
+        }
+        
+        .ctitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(28px, 4vw, 36px);
+            font-weight: 400;
+            color: var(--text);
+            margin-bottom: clamp(24px, 4vw, 36px);
+            line-height: 1.1;
+        }
+        
+        .ctitle em {
+            color: var(--gold);
+            font-style: italic;
+        }
+        
+        .field {
+            margin-bottom: clamp(18px, 3vw, 26px);
+            position: relative;
+        }
+        
+        .flabel {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            color: var(--muted);
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .fw {
+            position: relative;
+        }
+        
+        .ficon {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 13px;
+            color: rgba(201, 168, 76, .38);
+            pointer-events: none;
+            transition: color .3s;
+        }
+        
+        .fw:focus-within .ficon {
+            color: var(--gold);
+        }
+        
+        input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(14px, 2vw, 16px);
+            font-weight: 400;
+            color: var(--text);
+            padding: 8px clamp(28px, 4vw, 36px) 13px clamp(22px, 3vw, 28px);
+            letter-spacing: 1px;
+            -webkit-appearance: none;
+        }
+        
+        input::placeholder {
+            color: rgba(237, 232, 216, .2);
+            letter-spacing: 2px;
+        }
+        
+        input[type=password] {
+            letter-spacing: 5px;
+            font-size: clamp(15px, 2.2vw, 18px);
+        }
+        
+        input[type=password]::placeholder {
+            letter-spacing: 2px;
+            font-size: clamp(13px, 1.8vw, 15px);
+        }
+        
+        .fline {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(201, 168, 76, .18);
+            overflow: hidden;
+        }
+        
+        .fline::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold3), var(--gold2));
+            transition: width .5s cubic-bezier(.16, 1, .3, 1);
+        }
+        
+        .fw:focus-within .fline::after {
+            width: 100%;
+        }
+        
+        .ftog {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-60%);
+            background: none;
+            border: none;
+            color: rgba(201, 168, 76, .35);
+            font-size: 13px;
+            cursor: pointer;
+            padding: 4px;
+            transition: color .3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .ftog:hover,
+        .ftog:focus {
+            color: var(--gold);
+            outline: none;
+        }
+        
+        .remrow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: clamp(22px, 4vw, 32px);
+        }
+        
+        .remlbl {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            color: var(--muted);
+            text-transform: uppercase;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .chk {
+            width: 13px;
+            height: 13px;
+            border: 1px solid rgba(201, 168, 76, .4);
+            border-radius: 2px;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .3s;
+            flex-shrink: 0;
+        }
+        
+        .chk.on {
+            background: var(--gold3);
+            border-color: var(--gold);
+        }
+        
+        .chk.on::after {
+            content: '✓';
+            font-size: 8px;
+            color: var(--gold2);
+        }
+        
+        .forgot {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--gold);
+            text-decoration: none;
+            text-transform: uppercase;
+            position: relative;
+        }
+        
+        .forgot::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--gold);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform .3s ease;
+        }
+        
+        .forgot:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+        
+        .sbtn {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            padding: clamp(14px, 2.5vw, 18px) 24px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(10px, 1.2vw, 12px);
+            font-weight: 600;
+            letter-spacing: clamp(3px, .6vw, 6px);
+            color: var(--text);
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: border-color .4s, color .4s, box-shadow .4s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .sbtn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg, transparent 30%, rgba(201, 168, 76, .12), transparent 70%);
+            transform: translateX(-100%);
+            transition: transform .7s ease;
+        }
+        
+        .sbtn:hover::before,
+        .sbtn:active::before {
+            transform: translateX(100%);
+        }
+        
+        .sbtn:hover,
+        .sbtn:focus {
+            border-color: var(--gold);
+            color: var(--gold);
+            outline: none;
+            box-shadow: 0 0 28px rgba(201, 168, 76, .14), inset 0 0 20px rgba(201, 168, 76, .04);
+        }
+        
+        .sbtn.loading .btxt {
+            opacity: 0;
+        }
+        
+        .sbtn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(201, 168, 76, .3);
+            border-top-color: var(--gold);
+            transform: translate(-50%, -50%);
+            animation: spin .8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg)
+            }
+        }
+        
+        .errmsg {
+            background: rgba(255, 55, 55, .07);
+            border: 1px solid rgba(255, 80, 80, .2);
+            border-radius: 2px;
+            padding: 10px 14px;
+            margin-bottom: 18px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: #ff7070;
+            display: none;
+        }
+        
+        .signup {
+            text-align: center;
+            margin-top: clamp(16px, 3vw, 24px);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        
+        .signup a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+        
+        @media(pointer:fine) {
+            body {
+                cursor: none;
+            }
+            #cur {
+                position: fixed;
+                z-index: 9999;
+                pointer-events: none;
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: var(--gold);
+                transform: translate(-50%, -50%);
+                mix-blend-mode: screen;
+            }
+            #curR {
+                position: fixed;
+                z-index: 9998;
+                pointer-events: none;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                border: 1px solid rgba(201, 168, 76, .45);
+                transform: translate(-50%, -50%);
+                transition: width .4s, height .4s, border-color .3s;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="cur"></div>
+    <div id="curR"></div>
+    <canvas id="c"></canvas>
+    <div class="vignette"></div>
+    <div class="noise"></div>
+
+    <div class="topbar">
+        <div class="logo-wrap">
+            <div class="logo-pulse"></div>
+            <div class="logo-text">AutoControl Pro</div>
+        </div>
+        <div class="topnav"><span>Haqida</span><span>Xizmat</span><span>Aloqa</span></div>
+    </div>
+
+    <div class="brand">
+        <div class="b-eyebrow">Premium Boshqaruv Tizimi</div>
+        <div class="b-title">AUTO<br><b>CONTROL</b><br>PRO</div>
+        <div class="b-line"></div>
+        <div class="b-sub">Mashinangiz — qo'lingizda</div>
+        <div class="b-kpis">
+            <div>
+                <div class="kpi-n">3D</div>
+                <div class="kpi-l">Real-Vaqt</div>
+            </div>
+            <div>
+                <div class="kpi-n">24/7</div>
+                <div class="kpi-l">Monitoring</div>
+            </div>
+            <div>
+                <div class="kpi-n">∞</div>
+                <div class="kpi-l">Nazorat</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui">
+        <div class="card-wrap">
+            <div class="card">
+                <div class="ca ca-tl"></div>
+                <div class="ca ca-tr"></div>
+                <div class="ca ca-bl"></div>
+                <div class="ca ca-br"></div>
+                <div class="cglow"></div>
+                <div class="ctag">Tizimga kirish</div>
+                <div class="ctitle">Xush<br><em>kelibsiz</em></div>
+                <div class="errmsg" id="err">Email yoki parol noto'g'ri</div>
+                <div class="field">
+                    <label class="flabel">Email manzil</label>
+                    <div class="fw"><span class="ficon">◈</span><input type="email" id="email" placeholder="siz@mail.com" autocomplete="off">
+                        <div class="fline"></div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="flabel">Parol</label>
+                    <div class="fw"><span class="ficon">◈</span><input type="password" id="pass" placeholder="••••••••" autocomplete="off"><button class="ftog" id="ptog" onclick="toggleP()" type="button">◉</button>
+                        <div class="fline"></div>
+                    </div>
+                </div>
+                <div class="remrow">
+                    <label class="remlbl" onclick="toggleRem()"><div class="chk" id="chk"></div>Eslab qolish</label>
+                    <a href="#" class="forgot">Parolni tiklash</a>
+                </div>
+                <button class="sbtn" id="sbtn" onclick="login()"><span class="btxt">Tizimga kirish</span></button>
+                <div class="signup">Akkaunt yo'qmi? <a href="register.html">Ro'yxatdan o'tish</a></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottombar">
+        <div class="copy">© 2025 AutoControl Pro</div>
+        <div class="statusrow">
+            <div class="statbadge">
+                <div class="dg"></div>Tizim faol</div>
+            <div class="statbadge">
+                <div class="dgo"></div>Pro</div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // ═══ CURSOR ═══
+        const cur = document.getElementById('cur');
+        const curR = document.getElementById('curR');
+        let mx = innerWidth / 2,
+            my = innerHeight / 2,
+            rx = mx,
+            ry = my;
+        if (cur && window.matchMedia('(pointer:fine)').matches) {
+            document.addEventListener('mousemove', e => {
+                mx = e.clientX;
+                my = e.clientY;
+                cur.style.left = mx + 'px';
+                cur.style.top = my + 'px';
+            });
+            (function aC() {
+                rx += (mx - rx) * .11;
+                ry += (my - ry) * .11;
+                curR.style.left = rx + 'px';
+                curR.style.top = ry + 'px';
+                requestAnimationFrame(aC);
+            })();
+        }
+
+        // ═══ SCENE ═══
+        const W = () => window.innerWidth,
+            H = () => window.innerHeight;
+        const mob = W() < 768;
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.getElementById('c'),
+            antialias: true,
+            alpha: true,
+            powerPreference: 'high-performance'
+        });
+        renderer.setPixelRatio(Math.min(devicePixelRatio, mob ? 1.5 : 2));
+        renderer.setSize(W(), H());
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.25;
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x010306, 0.036);
+        scene.background = new THREE.Color(0x010306);
+
+        const camera = new THREE.PerspectiveCamera(42, W() / H(), .1, 200);
+        camera.position.set(mob ? 0 : 3.5, mob ? 2.0 : 2.2, mob ? 8.0 : 7.5);
+        camera.lookAt(0, .3, 0);
+
+        // ═══ LIGHTS ═══
+        scene.add(new THREE.AmbientLight(0x0a0c14, 1.4));
+
+        const kL = new THREE.DirectionalLight(0xfff5dd, 5.5);
+        kL.position.set(7, 11, 6);
+        kL.castShadow = true;
+        kL.shadow.mapSize.setScalar(2048);
+        kL.shadow.camera.near = 0.5;
+        kL.shadow.camera.far = 45;
+        kL.shadow.camera.top = kL.shadow.camera.right = 12;
+        kL.shadow.camera.bottom = kL.shadow.camera.left = -12;
+        kL.shadow.bias = -0.0005;
+        scene.add(kL);
+
+        const fL = new THREE.DirectionalLight(0x1a3060, 2.8);
+        fL.position.set(-8, 5, -5);
+        scene.add(fL);
+        const rL = new THREE.DirectionalLight(0x00aaff, 4);
+        rL.position.set(-4, 2, -9);
+        scene.add(rL);
+
+        const uL = new THREE.PointLight(0x0066ff, 10, 7);
+        uL.position.set(0, -1.05, 0);
+        scene.add(uL);
+        const ftL = new THREE.PointLight(0xff7700, 3.5, 12);
+        ftL.position.set(9, 1.5, 2);
+        scene.add(ftL);
+
+        // Headlight spotlights
+        const sL1 = new THREE.SpotLight(0xfffbe8, 14, 22, .16, .5);
+        sL1.position.set(3.15, .1, .65);
+        sL1.target.position.set(12, -.6, .65);
+        scene.add(sL1);
+        scene.add(sL1.target);
+        const sL2 = new THREE.SpotLight(0xfffbe8, 14, 22, .16, .5);
+        sL2.position.set(3.15, .1, -.65);
+        sL2.target.position.set(12, -.6, -.65);
+        scene.add(sL2);
+        scene.add(sL2.target);
+
+        // ═══ MATERIALS ═══
+        const MP = (c, met, rou, cc = 0, ccR = 0, extra = {}) => new THREE.MeshPhysicalMaterial({
+            color: c,
+            metalness: met,
+            roughness: rou,
+            clearcoat: cc,
+            clearcoatRoughness: ccR,
+            ...extra
+        });
+
+        const mBody = MP(0x060a12, .98, .04, 1, .04, {
+            envMapIntensity: 2.5
+        });
+        const mBodyD = MP(0x080e1a, .92, .08, .7, .08);
+        const mGold = MP(0xc9a84c, 1, .08, .6, .04, {
+            envMapIntensity: 2
+        });
+        const mGoldD = MP(0x8a6a1a, .95, .12);
+        const mGlass = new THREE.MeshPhysicalMaterial({
+            color: 0x0c1e32,
+            metalness: .05,
+            roughness: 0,
+            transparent: true,
+            opacity: .3,
+            transmission: .65,
+            side: THREE.DoubleSide
+        });
+        const mGlassDk = new THREE.MeshPhysicalMaterial({
+            color: 0x05121e,
+            metalness: .08,
+            roughness: 0,
+            transparent: true,
+            opacity: .58,
+            side: THREE.DoubleSide
+        });
+        const mRubber = MP(0x090909, .1, .92);
+        const mRim = MP(0xc9a84c, 1, .05, .8, .04, {
+            envMapIntensity: 1.5
+        });
+        const mRimD = MP(0x111111, .6, .3);
+        const mChrome = MP(0xd5dde5, 1, .03, 1, .02);
+        const mLight = new THREE.MeshStandardMaterial({
+            color: 0xfff8ee,
+            emissive: 0xfff8ee,
+            emissiveIntensity: 3.5,
+            transparent: true,
+            opacity: .96
+        });
+        const mRed = new THREE.MeshStandardMaterial({
+            color: 0xff2200,
+            emissive: 0xff2200,
+            emissiveIntensity: 4.5,
+            transparent: true,
+            opacity: .92
+        });
+        const mOrg = new THREE.MeshStandardMaterial({
+            color: 0xff8800,
+            emissive: 0xff8800,
+            emissiveIntensity: 3.5
+        });
+        const mDRL = new THREE.MeshStandardMaterial({
+            color: 0xfff5bb,
+            emissive: 0xfff5bb,
+            emissiveIntensity: 5
+        });
+        const mInt = MP(0x18100a, .22, .82);
+        const mSeat = MP(0x1a0e06, .08, .9);
+        const mRedA = new THREE.MeshStandardMaterial({
+            color: 0xcc1100,
+            emissive: 0xcc1100,
+            emissiveIntensity: .6,
+            metalness: .3,
+            roughness: .5
+        });
+
+        // ═══ GEOMETRY HELPER ═══
+        const car = new THREE.Group();
+        scene.add(car);
+
+        function bx(geo, mat, px, py, pz, rx = 0, ry = 0, rz = 0) {
+            const m = new THREE.Mesh(geo, mat);
+            m.position.set(px, py, pz);
+            m.rotation.set(rx, ry, rz);
+            m.castShadow = true;
+            m.receiveShadow = true;
+            return m;
+        }
+
+        function BOX(w, h, d) {
+            return new THREE.BoxGeometry(w, h, d);
+        }
+
+        function CYL(rt, rb, h, s = 32) {
+            return new THREE.CylinderGeometry(rt, rb, h, s);
+        }
+
+        function TOR(r, t, s = 16, ss = 60) {
+            return new THREE.TorusGeometry(r, t, s, ss);
+        }
+
+        // ═══════════════════════════
+        //   BODY — SEDAN SILHOUETTE
+        // ═══════════════════════════
+
+        // Chassis plate
+        car.add(bx(BOX(4.9, .3, 2.1), mBodyD, 0, -.18, 0));
+
+        // Lower body
+        car.add(bx(BOX(4.65, .6, 2.14), mBody, 0, .26, 0));
+
+        // Side sill
+        car.add(bx(BOX(4.6, .12, .14), mGoldD, .0, .0, 1.04));
+        car.add(bx(BOX(4.6, .12, .14), mGoldD, .0, .0, -1.04));
+
+        // Upper cabin
+        car.add(bx(BOX(2.55, .64, 2.04), mBody, -.07, .76, 0));
+
+        // Hood — shaped via multiple boxes
+        car.add(bx(BOX(2.28, .15, 2.0), mBody, .78, .56, 0, -.1, 0, 0));
+        car.add(bx(BOX(.55, .22, 2.0), mBody, 1.88, .5, 0, -.32, 0, 0));
+        // Hood lip at front
+        car.add(bx(BOX(.1, .12, 2.0), mBodyD, 2.14, .38, 0));
+        // Hood center crease (gold)
+        car.add(bx(BOX(2.3, .016, .05), mGold, .72, .65, 0));
+
+        // Trunk
+        car.add(bx(BOX(1.85, .12, 2.0), mBody, -1.6, .56, 0, .06, 0, 0));
+        car.add(bx(BOX(.45, .2, 2.0), mBody, -2.22, .5, 0, .28, 0, 0));
+        // Trunk lip
+        car.add(bx(BOX(.1, .1, 2.02), mBodyD, -2.06, .66, 0));
+
+        // Roofline
+        car.add(bx(BOX(2.6, .06, 2.06), mBody, -.07, 1.08, 0));
+
+        // A-pillars
+        car.add(bx(BOX(.08, .72, .08), mGlassDk, 1.08, .73, 1.0, -.55, 0, .04));
+        car.add(bx(BOX(.08, .72, .08), mGlassDk, 1.08, .73, -1.0, -.55, 0, -.04));
+        // C-pillars
+        car.add(bx(BOX(.08, .65, .08), mBodyD, -.9, .76, 1.0, .5, 0, -.04));
+        car.add(bx(BOX(.08, .65, .08), mBodyD, -.9, .76, -1.0, .5, 0, .04));
+
+        // ─── WINDSHIELDS ───
+        car.add(bx(BOX(.07, .72, 1.92), mGlass, .94, .74, 0, -.57, 0, 0));
+        car.add(bx(BOX(.07, .62, 1.88), mGlassDk, -.86, .72, 0, .56, 0, 0));
+        // Side windows (planes)
+        const swG = new THREE.PlaneGeometry(2.16, .44);
+        const swL = new THREE.Mesh(swG, mGlass);
+        swL.position.set(-.05, .76, 1.05);
+        car.add(swL);
+        const swR = new THREE.Mesh(swG, mGlass);
+        swR.position.set(-.05, .76, -1.05);
+        swR.rotation.y = Math.PI;
+        car.add(swR);
+        // Quarter glass
+        const qgG = new THREE.PlaneGeometry(.58, .38);
+        const qgL = new THREE.Mesh(qgG, mGlassDk);
+        qgL.position.set(-1.12, .76, 1.05);
+        car.add(qgL);
+        const qgR = new THREE.Mesh(qgG, mGlassDk);
+        qgR.position.set(-1.12, .76, -1.05);
+        qgR.rotation.y = Math.PI;
+        car.add(qgR);
+
+        // ─── INTERIOR ───
+        car.add(bx(BOX(1.85, .16, 1.72), mInt, .7, .52, 0)); // dashboard
+        car.add(bx(BOX(.04, .42, .04), mChrome, .58, .4, -.36, -.42, 0, .18)); // steer col
+        const sw = new THREE.Mesh(TOR(.16, .016, 8, 32), mChrome);
+        sw.position.set(.38, .58, -.36);
+        sw.rotation.set(-.28, 0, .18);
+        car.add(sw);
+        // Seats
+        car.add(bx(BOX(.56, .54, .6), mSeat, -.12, .4, .48));
+        car.add(bx(BOX(.56, .54, .6), mSeat, -.12, .4, -.48));
+        car.add(bx(BOX(.44, .3, .12), mSeat, -.12, .74, .48));
+        car.add(bx(BOX(.44, .3, .12), mSeat, -.12, .74, -.48));
+        // Center console
+        car.add(bx(BOX(1.5, .18, .28), mInt, .08, .44, 0));
+        // Gear shifter
+        car.add(bx(CYL(.025, .025, .2, 8), mChrome, .32, .54, .04));
+        car.add(bx(CYL(.045, .04, .06, 12), mGold, .32, .64, .04));
+
+        // ─── ROOF RAILS ───
+        car.add(bx(BOX(2.6, .018, .04), mGold, -.07, 1.11, .99));
+        car.add(bx(BOX(2.6, .018, .04), mGold, -.07, 1.11, -.99));
+
+        // ─── FRONT FASCIA ───
+        car.add(bx(BOX(.18, .54, 2.12), mBodyD, 2.41, .24, 0));
+        car.add(bx(BOX(.3, .1, 2.1), mBodyD, 2.3, -.05, 0)); // lower
+        car.add(bx(BOX(.28, .05, 1.62), mGoldD, 2.27, -.11, 0)); // splitter
+        // Front air intakes
+        car.add(bx(BOX(.1, .18, .55), mBodyD, 2.36, -.0, .54));
+        car.add(bx(BOX(.1, .18, .55), mBodyD, 2.36, -.0, -.54));
+        // Front bumper corners
+        car.add(bx(BOX(.22, .32, .28), mBodyD, 2.35, .16, 1.02));
+        car.add(bx(BOX(.22, .32, .28), mBodyD, 2.35, .16, -1.02));
+
+        // ─── REAR FASCIA ───
+        car.add(bx(BOX(.18, .52, 2.12), mBodyD, -2.41, .24, 0));
+        car.add(bx(BOX(.3, .12, 1.52), mGoldD, -2.27, -.09, 0)); // diffuser
+        for (let i = 0; i < 6; i++) car.add(bx(BOX(.28, .1, .025), mGoldD, -2.27, -.09, -.55 + i * .22));
+
+        // ─── GOLD BODY TRIM ───
+        car.add(bx(BOX(4.6, .024, .05), mGold, .0, .54, 1.048));
+        car.add(bx(BOX(4.6, .024, .05), mGold, .0, .54, -1.048));
+        car.add(bx(BOX(4.55, .04, .055), mChrome, .0, .03, 1.046));
+        car.add(bx(BOX(4.55, .04, .055), mChrome, .0, .03, -1.046));
+
+        // ─── HEADLIGHTS ───
+        // Housing
+        car.add(bx(BOX(.2, .22, .74), mBodyD, 2.31, .15, .74));
+        car.add(bx(BOX(.2, .22, .74), mBodyD, 2.31, .15, -.74));
+        // Main projector
+        car.add(bx(CYL(.075, .09, .16, 18), mLight, 2.35, .15, .72, 0, 0, Math.PI / 2));
+        car.add(bx(CYL(.075, .09, .16, 18), mLight, 2.35, .15, -.72, 0, 0, Math.PI / 2));
+        // Inner halo
+        const haloG = new THREE.Mesh(TOR(.065, .008, 8, 24), new THREE.MeshStandardMaterial({
+            color: 0xfff5cc,
+            emissive: 0xfff5cc,
+            emissiveIntensity: 5
+        }));
+        haloG.rotation.z = Math.PI / 2;
+        haloG.position.set(2.38, .15, .72);
+        car.add(haloG);
+        const haloR = new THREE.Mesh(TOR(.065, .008, 8, 24), new THREE.MeshStandardMaterial({
+            color: 0xfff5cc,
+            emissive: 0xfff5cc,
+            emissiveIntensity: 5
+        }));
+        haloR.rotation.z = Math.PI / 2;
+        haloR.position.set(2.38, .15, -.72);
+        car.add(haloR);
+        // DRL upper strip
+        car.add(bx(BOX(.055, .038, 1.42), mDRL, 2.33, .26, 0));
+        car.add(bx(BOX(.04, .028, 1.08), mDRL, 2.28, .2, 0));
+        // HL glass cover
+        car.add(bx(BOX(.055, .22, .74), mGlass, 2.28, .15, .74));
+        car.add(bx(BOX(.055, .22, .74), mGlass, 2.28, .15, -.74));
+        // Chrome accent inside
+        car.add(bx(BOX(.12, .06, .72), mChrome, 2.3, .06, .74));
+        car.add(bx(BOX(.12, .06, .72), mChrome, 2.3, .06, -.74));
+        // Turn signal (front)
+        car.add(bx(BOX(.1, .08, .22), mOrg, 2.32, .22, 1.06));
+        car.add(bx(BOX(.1, .08, .22), mOrg, 2.32, .22, -1.06));
+
+        // ─── GRILLE ───
+        car.add(bx(BOX(.1, .48, 1.14), mGold, 2.46, .09, 0)); // frame
+        for (let r = 0; r < 5; r++)
+            for (let c = 0; c < 8; c++) car.add(bx(BOX(.07, .07, .1), mGoldD, 2.46, .16 - r * .09, -.5 + c * .144));
+        // Logo
+        const bdg = new THREE.Mesh(CYL(.07, .07, .08, 20), mGold);
+        bdg.rotation.z = Math.PI / 2;
+        bdg.position.set(2.49, .26, 0);
+        car.add(bdg);
+        const bdgI = new THREE.Mesh(CYL(.042, .042, .09, 20), mGoldD);
+        bdgI.rotation.z = Math.PI / 2;
+        bdgI.position.set(2.5, .26, 0);
+        car.add(bdgI);
+
+        // ─── TAILLIGHTS ───
+        car.add(bx(BOX(.18, .24, .74), mBodyD, -2.31, .15, .74));
+        car.add(bx(BOX(.18, .24, .74), mBodyD, -2.31, .15, -.74));
+        car.add(bx(BOX(.055, .2, .7), mRed, -2.29, .15, .74));
+        car.add(bx(BOX(.055, .2, .7), mRed, -2.29, .15, -.74));
+        car.add(bx(BOX(.05, .038, 1.54), mRed, -2.32, .28, 0)); // strip
+        car.add(bx(BOX(.055, .1, .22), mOrg, -2.3, .15, 1.02));
+        car.add(bx(BOX(.055, .1, .22), mOrg, -2.3, .15, -1.02));
+        // Rear logo
+        const rBdg = new THREE.Mesh(CYL(.058, .058, .07, 20), mGold);
+        rBdg.rotation.z = Math.PI / 2;
+        rBdg.position.set(-2.48, .28, 0);
+        car.add(rBdg);
+
+        // ─── DOOR HANDLES ───
+        [
+            [.72, .72, 1.07],
+            [.72, -.72, 1.07],
+            [.72, .72, -1.07],
+            [.72, -.72, -1.07]
+        ].forEach(([x, y, z]) => {
+            car.add(bx(BOX(.04, .042, .22), mChrome, x, y, z));
+        });
+
+        // ─── SIDE MIRRORS ───
+        function mkMirror(z) {
+            const g = new THREE.Group();
+            g.add(bx(BOX(.04, .09, .07), mChrome, 0, 0, 0));
+            const hd = bx(BOX(.055, .1, .24), mBodyD, 0, .06, .1, -.14, 0, 0);
+            car.add && g.add(hd);
+            g.add(new THREE.Mesh(BOX(.014, .08, .19), mGlass) && bx(BOX(.014, .08, .19), mGlass, 0, .06, .11));
+            g.position.set(1.08, .68, z);
+            return g;
+        }
+        car.add(mkMirror(1.04));
+        car.add(mkMirror(-1.04));
+
+        // ─── ANTENNA ───
+        car.add(bx(CYL(.008, .008, .28, 8), mChrome, -.32, 1.12, 0));
+
+        // ─── EXHAUST ───
+        function mkExh(z) {
+            const g = new THREE.Group();
+            const p = new THREE.Mesh(CYL(.04, .04, .18, 16), mChrome);
+            p.rotation.z = Math.PI / 2;
+            g.add(p);
+            const t = new THREE.Mesh(TOR(.04, .006, 8, 20), mGold);
+            t.rotation.y = Math.PI / 2;
+            t.position.x = -.09;
+            g.add(t);
+            g.position.set(-2.38, -.27, z);
+            return g;
+        }
+        car.add(mkExh(.62));
+        car.add(mkExh(-.62));
+
+        // ════════════════════
+        //   WHEELS — DETAILED
+        // ════════════════════
+        function mkWheel(x, z) {
+            const g = new THREE.Group();
+            // Tire
+            const tire = new THREE.Mesh(CYL(.44, .44, .31, 36), mRubber);
+            tire.rotation.z = Math.PI / 2;
+            g.add(tire);
+            // Tread grooves
+            for (let i = 0; i < 20; i++) {
+                const ang = (i / 20) * Math.PI * 2;
+                const t2 = bx(BOX(.3, .012, .025), new THREE.MeshStandardMaterial({
+                    color: 0x040404,
+                    roughness: 1
+                }), 0, .44 * Math.cos(ang), .44 * Math.sin(ang), ang, 0, 0);
+                g.add(t2);
+            }
+            // Rim dish background
+            const rd = new THREE.Mesh(CYL(.37, .39, .32, 36), mRimD);
+            rd.rotation.z = Math.PI / 2;
+            g.add(rd);
+            // Outer rim ring
+            const or2 = new THREE.Mesh(TOR(.375, .016, 12, 36), mRim);
+            or2.rotation.y = Math.PI / 2;
+            g.add(or2);
+            // 5 twin-spokes
+            for (let i = 0; i < 5; i++) {
+                const a = (i / 5) * Math.PI * 2;
+                const s1 = bx(BOX(.33, .05, .032), mRim, 0, .19 * Math.cos(a), .19 * Math.sin(a), a, 0, 0);
+                g.add(s1);
+                const aA = a - .22,
+                    aB = a + .22;
+                g.add(bx(BOX(.14, .038, .026), mRim, 0, .32 * Math.cos(aA), .32 * Math.sin(aA), aA, 0, 0));
+                g.add(bx(BOX(.14, .038, .026), mRim, 0, .32 * Math.cos(aB), .32 * Math.sin(aB), aB, 0, 0));
+            }
+            // Inner ring
+            const ir = new THREE.Mesh(TOR(.18, .014, 10, 30), mGold);
+            ir.rotation.y = Math.PI / 2;
+            g.add(ir);
+            // Center cap
+            const cc2 = new THREE.Mesh(CYL(.072, .072, .35, 16), mGold);
+            cc2.rotation.z = Math.PI / 2;
+            g.add(cc2);
+            const ccI = new THREE.Mesh(CYL(.042, .042, .36, 12), mGoldD);
+            ccI.rotation.z = Math.PI / 2;
+            g.add(ccI);
+            // Brake rotor
+            const rot = new THREE.Mesh(CYL(.29, .29, .04, 32), mChrome);
+            rot.rotation.z = Math.PI / 2;
+            rot.position.x = (z > 0 ? -.02 : .02);
+            g.add(rot);
+            // Caliper
+            const cal = new THREE.Mesh(BOX(.06, .16, .22), mRedA);
+            cal.position.set(0, .19, 0);
+            g.add(cal);
+            g.position.set(x, -.38, z);
+            return g;
+        }
+        const wheels = [];
+        [
+            [1.44, 1.08],
+            [1.44, -1.08],
+            [-1.44, 1.08],
+            [-1.44, -1.08]
+        ].forEach(([x, z]) => {
+            const w = mkWheel(x, z);
+            wheels.push(w);
+            car.add(w);
+        });
+
+        // ════════════
+        //  GROUND
+        // ════════════
+        const floor = new THREE.Mesh(
+            new THREE.PlaneGeometry(80, 80),
+            new THREE.MeshPhysicalMaterial({
+                color: 0x020408,
+                metalness: .94,
+                roughness: .03,
+                reflectivity: 1,
+                clearcoat: 1
+            })
+        );
+        floor.rotation.x = -Math.PI / 2;
+        floor.position.y = -.83;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        const grid = new THREE.GridHelper(60, 60, 0xc9a84c, 0x090e18);
+        grid.position.y = -.82;
+        grid.material.opacity = .11;
+        grid.material.transparent = true;
+        scene.add(grid);
+
+        // Ground glow
+        const gGlow = new THREE.Mesh(new THREE.PlaneGeometry(5.8, 3), new THREE.MeshBasicMaterial({
+            color: 0x000000,
+            transparent: true,
+            opacity: .65,
+            side: THREE.DoubleSide
+        }));
+        gGlow.rotation.x = Math.PI / 2;
+        gGlow.position.y = -.825;
+        scene.add(gGlow);
+
+        // Colored ground reflections
+        [{
+            c: 0x0033aa,
+            o: .06,
+            s: 7
+        }, {
+            c: 0xc9a84c,
+            o: .04,
+            s: 4
+        }].forEach(({
+            c,
+            o,
+            s
+        }) => {
+            const m = new THREE.Mesh(new THREE.PlaneGeometry(s, s * .45), new THREE.MeshBasicMaterial({
+                color: c,
+                transparent: true,
+                opacity: o,
+                side: THREE.DoubleSide
+            }));
+            m.rotation.x = Math.PI / 2;
+            m.position.y = -.822;
+            scene.add(m);
+        });
+
+        scene.add(new THREE.Mesh(new THREE.SphereGeometry(50, 16, 16), new THREE.MeshBasicMaterial({
+            color: 0x010306,
+            side: THREE.BackSide
+        })));
+
+        // ── ORBIT RINGS ──
+        const rings = [];
+        for (let i = 0; i < 4; i++) {
+            const r = new THREE.Mesh(new THREE.TorusGeometry(3.2 + i * 1.1, .007 + i * .002, 6, 80), new THREE.MeshBasicMaterial({
+                color: 0xc9a84c,
+                transparent: true,
+                opacity: .04 - i * .008
+            }));
+            r.rotation.x = Math.PI / 2 + i * .12;
+            r.position.y = -.28;
+            scene.add(r);
+            rings.push(r);
+        }
+
+        // ── 3D PARTICLES ──
+        const pG = new THREE.BufferGeometry();
+        const PC = 500;
+        const pP = new Float32Array(PC * 3);
+        for (let i = 0; i < PC; i++) {
+            pP[i * 3] = (Math.random() - .5) * 24;
+            pP[i * 3 + 1] = Math.random() * 10 - 2;
+            pP[i * 3 + 2] = (Math.random() - .5) * 24;
+        }
+        pG.setAttribute('position', new THREE.BufferAttribute(pP, 3));
+        const pts = new THREE.Points(pG, new THREE.PointsMaterial({
+            color: 0xc9a84c,
+            size: .042,
+            transparent: true,
+            opacity: .32,
+            sizeAttenuation: true
+        }));
+        scene.add(pts);
+
+        // ── LIGHT BEAMS ──
+        const bMat = new THREE.MeshBasicMaterial({
+            color: 0xfffbee,
+            transparent: true,
+            opacity: .022,
+            side: THREE.DoubleSide
+        });
+        const b1 = new THREE.Mesh(new THREE.ConeGeometry(.55, 7, 12, 1, true), bMat);
+        b1.rotation.z = -Math.PI / 2;
+        b1.position.set(6.5, .08, .65);
+        scene.add(b1);
+        const b2 = new THREE.Mesh(new THREE.ConeGeometry(.55, 7, 12, 1, true), bMat);
+        b2.rotation.z = -Math.PI / 2;
+        b2.position.set(6.5, .08, -.65);
+        scene.add(b2);
+
+        // Dust motes
+        const dG = new THREE.BufferGeometry();
+        const DC = 120;
+        const dP = new Float32Array(DC * 3);
+        for (let i = 0; i < DC; i++) {
+            dP[i * 3] = 3 + Math.random() * 5;
+            dP[i * 3 + 1] = (Math.random() - .5) * .65;
+            dP[i * 3 + 2] = (Math.random() - .5) * .7;
+        }
+        dG.setAttribute('position', new THREE.BufferAttribute(dP, 3));
+        const dust = new THREE.Points(dG, new THREE.PointsMaterial({
+            color: 0xfffbee,
+            size: .017,
+            transparent: true,
+            opacity: .28
+        }));
+        scene.add(dust);
+
+        // ════════════════════
+        //  ANIMATE
+        // ════════════════════
+        const clock = new THREE.Clock();
+        let mxN = 0,
+            myN = 0,
+            txN = 0,
+            tyN = 0,
+            introT = 0;
+
+        function onPM(e) {
+            const x = e.touches ? e.touches[0].clientX : e.clientX,
+                y = e.touches ? e.touches[0].clientY : e.clientY;
+            mxN = (x / W() - .5) * 2;
+            myN = (y / H() - .5) * 2;
+        }
+        window.addEventListener('mousemove', onPM, {
+            passive: true
+        });
+        window.addEventListener('touchmove', onPM, {
+            passive: true
+        });
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', e => {
+                if (e.gamma != null) mxN = Math.max(-1, Math.min(1, e.gamma / 35));
+                if (e.beta != null) myN = Math.max(-1, Math.min(1, (e.beta - 20) / 35));
+            }, {
+                passive: true
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const dt = Math.min(clock.getDelta(), .05),
+                t = clock.elapsedTime;
+            txN += (mxN - txN) * .042;
+            tyN += (myN - tyN) * .042;
+
+            // INTRO
+            if (introT < 1) {
+                introT = Math.min(1, introT + dt * .42);
+                const e4 = 1 - Math.pow(1 - introT, 4);
+                car.position.x = 14 * (1 - e4);
+                car.position.y = -3.5 * (1 - e4);
+                car.rotation.y = -2.2 * (1 - e4);
+                car.rotation.x = .18 * (1 - e4);
+            }
+
+            // Idle
+            const idY = -.12 + txN * .22 + Math.sin(t * .28) * .04;
+            const idX = tyN * .045;
+            if (introT >= 1) {
+                car.rotation.y += (idY - car.rotation.y) * .025;
+                car.rotation.x += (idX - car.rotation.x) * .02;
+            }
+            car.position.y += (.0 - car.position.y) * .01;
+            car.position.y += Math.sin(t * .55) * .0008;
+
+            // Wheel spin
+            wheels.forEach(w => w.children[0].rotation.x += dt * .55);
+
+            // Rings
+            rings.forEach((r, i) => {
+                r.rotation.z += dt * .048 * (i % 2 ? -1 : 1);
+                r.material.opacity = .036 + Math.sin(t * 1.1 + i * .8) * .016;
+            });
+
+            // Grid
+            grid.position.z = (t * .55) % 1;
+
+            // Particles
+            for (let i = 1; i < PC; i += 4) {
+                pP[i * 3 + 1] += dt * .08;
+                if (pP[i * 3 + 1] > 8) pP[i * 3 + 1] = -2;
+            }
+            pG.attributes.position.needsUpdate = true;
+            pts.rotation.y += dt * .011;
+
+            // Dust
+            for (let i = 0; i < DC; i++) {
+                dP[i * 3] += dt * .11;
+                dP[i * 3 + 1] += Math.sin(t + i) * .0008;
+                if (dP[i * 3] > 9) dP[i * 3] = 3;
+            }
+            dG.attributes.position.needsUpdate = true;
+
+            // Dynamic lights
+            uL.intensity = 8 + Math.sin(t * 1.8) * 4;
+            uL.color.setHSL(.58 + Math.sin(t * .4) * .05, .9, .5);
+            rL.position.x = -3 + Math.sin(t * .35) * 2.2;
+            rL.position.z = -6 + Math.cos(t * .35) * 2;
+
+            // Camera
+            if (mob) {
+                camera.position.x = Math.sin(t * .06) * .3 + txN * .15;
+                camera.position.y = 2.0 + tyN * .12;
+                camera.position.z = 8 - Math.sin(t * .08) * .12;
+            } else {
+                camera.position.x = 3.5 + txN * .26 + Math.sin(t * .12) * .14;
+                camera.position.y = 2.2 + tyN * .14;
+                camera.position.z = 7.5 - Math.sin(t * .1) * .1;
+            }
+            camera.lookAt(0, .28, 0);
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = W() / H();
+            camera.updateProjectionMatrix();
+            renderer.setSize(W(), H());
+        });
+
+        // ════════════
+        //  LOGIN
+        // ════════════
+        function toggleP() {
+            const i = document.getElementById('pass'),
+                b = document.getElementById('ptog'),
+                p = i.type === 'password';
+            i.type = p ? 'text' : 'password';
+            i.style.letterSpacing = p ? '1px' : '5px';
+            i.style.fontSize = p ? '16px' : '18px';
+            b.textContent = p ? '◎' : '◉';
+        }
+        let rem = false;
+
+        function toggleRem() {
+            rem = !rem;
+            document.getElementById('chk').classList.toggle('on', rem);
+        }
+
+        function login() {
+            const em = document.getElementById('email').value.trim();
+            const pw = document.getElementById('pass').value;
+            const btn = document.getElementById('sbtn'),
+                err = document.getElementById('err');
+            err.style.display = 'none';
+            if (!em || !pw) {
+                err.textContent = 'Email va parolni to\'ldiring';
+                err.style.display = 'block';
+                return;
+            }
+            if (pw.length < 4) {
+                err.textContent = 'Parol kamida 4 belgidan iborat';
+                err.style.display = 'block';
+                return;
+            }
+            btn.classList.add('loading');
+            // Camera fly into car
+            setTimeout(() => {
+                let p = 0;
+                const s = {
+                    x: camera.position.x,
+                    y: camera.position.y,
+                    z: camera.position.z
+                };
+                const iv = setInterval(() => {
+                    p = Math.min(1, p + .055);
+                    const e = 1 - Math.pow(1 - p, 3);
+                    camera.position.x = s.x + (0 - s.x) * e;
+                    camera.position.y = s.y + (.6 - s.y) * e;
+                    camera.position.z = s.z + (2.8 - s.z) * e;
+                    camera.lookAt(0, .3, 0);
+                    if (p >= 1) clearInterval(iv);
+                }, 16);
+            }, 600);
+            setTimeout(() => {
+                btn.classList.remove('loading');
+                localStorage.setItem('autocontrol_user', JSON.stringify({
+                    email: em,
+                    name: em.split('@')[0]
+                }));
+                document.body.style.transition = 'opacity .9s ease';
+                document.body.style.opacity = '0';
+                setTimeout(() => window.location.href = 'dashboard.html', 900);
+            }, 1900);
+        }
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter') login();
+        });
+
+        // Hint
+        setTimeout(() => {
+            const h = document.createElement('div');
+            h.style.cssText = 'position:fixed;bottom:58px;left:50%;transform:translateX(-50%);font-family:Rajdhani,sans-serif;font-size:10px;letter-spacing:2px;color:rgba(201,168,76,.3);text-transform:uppercase;z-index:30;pointer-events:none;white-space:nowrap;';
+            h.textContent = 'Demo: istalgan email · parol kiriting';
+            document.body.appendChild(h);
+            setTimeout(() => {
+                h.style.transition = 'opacity 1.5s';
+                h.style.opacity = '0';
+            }, 4500);
+        }, 2500);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoControl — Joylashuv</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+  :root {
+    --bg:#050810; --card:#0d1117; --card2:#111827;
+    --accent:#00d4ff; --accent2:#0066ff; --green:#00ff88;
+    --red:#ff3366; --text:#e2e8f0; --muted:#64748b; --border:rgba(0,212,255,0.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Exo 2',sans-serif; background:var(--bg); color:var(--text); height:100vh; display:flex; flex-direction:column; }
+  .topbar {
+    display:flex; align-items:center; gap:14px; padding:16px 20px;
+    background:rgba(13,17,23,0.97); backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border); z-index:200; flex-shrink:0;
+  }
+  .back-btn {
+    background:rgba(255,255,255,0.06); border:1px solid var(--border);
+    border-radius:10px; width:38px; height:38px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:16px; text-decoration:none; color:var(--text);
+  }
+  .topbar h1 { font-family:'Orbitron',sans-serif; font-size:15px; font-weight:700; }
+  .topbar-right { margin-left:auto; display:flex; gap:8px; }
+  .map-btn {
+    padding:8px 14px; border-radius:10px; font-size:12px; font-weight:600;
+    border:1px solid var(--border); background:rgba(255,255,255,0.06);
+    color:var(--text); cursor:pointer; transition:all 0.2s;
+  }
+  .map-btn:hover { border-color:var(--accent); color:var(--accent); }
+
+  #map { flex:1; z-index:1; }
+
+  /* Info panel bottom */
+  .info-panel {
+    background:rgba(13,17,23,0.97); backdrop-filter:blur(20px);
+    border-top:1px solid var(--border); padding:16px 20px 20px;
+    z-index:200; flex-shrink:0;
+  }
+  .car-loc-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .car-loc-name { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; }
+  .car-loc-addr { font-size:12px; color:var(--muted); margin-top:3px; }
+  .live-badge { padding:5px 12px; border-radius:30px; font-size:11px; font-weight:700; background:rgba(0,255,136,0.15); color:var(--green); border:1px solid rgba(0,255,136,0.3); display:flex; align-items:center; gap:5px; }
+  .live-dot { width:7px; height:7px; border-radius:50%; background:var(--green); animation:pulse 1.2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .loc-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  .loc-stat { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:12px; padding:10px; text-align:center; }
+  .loc-stat .val { font-family:'Orbitron',sans-serif; font-size:15px; font-weight:700; color:var(--accent); }
+  .loc-stat .lbl { font-size:10px; color:var(--muted); margin-top:3px; }
+
+  .action-row { display:flex; gap:10px; margin-top:14px; }
+  .action-btn {
+    flex:1; padding:12px; border-radius:14px; border:none; cursor:pointer;
+    font-family:'Exo 2',sans-serif; font-size:13px; font-weight:600;
+    transition:all 0.25s;
+  }
+  .action-btn.primary { background:linear-gradient(135deg,var(--accent2),var(--accent)); color:#fff; }
+  .action-btn.secondary { background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--text); }
+  .action-btn:hover { transform:translateY(-1px); }
+
+  /* Bottom Nav */
+  .bottom-nav {
+    background:rgba(13,17,23,0.97); border-top:1px solid var(--border);
+    display:flex; padding:8px 0 12px; z-index:200;
+  }
+  .nav-item {
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+    cursor:pointer; text-decoration:none; padding:6px;
+  }
+  .nav-icon { font-size:22px; }
+  .nav-label { font-size:10px; color:var(--muted); font-weight:500; }
+  .nav-item.active .nav-label { color:var(--accent); }
+  .nav-item.active .nav-icon { filter:drop-shadow(0 0 6px var(--accent)); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="dashboard.html" class="back-btn">←</a>
+  <h1>JOYLASHUV</h1>
+  <div class="topbar-right">
+    <button class="map-btn" onclick="centerMap()">📍 Markazga</button>
+    <button class="map-btn" onclick="showHistory()">📋 Tarix</button>
+  </div>
+</div>
+
+<div id="map"></div>
+
+<div class="info-panel">
+  <div class="car-loc-row">
+    <div>
+      <div class="car-loc-name">🚗 GM Cobalt</div>
+      <div class="car-loc-addr" id="locAddr">Toshkent, Chilonzor tumani, Bunyodkor ko'chasi</div>
+    </div>
+    <div class="live-badge"><div class="live-dot"></div> JONLI</div>
+  </div>
+  <div class="loc-stats">
+    <div class="loc-stat">
+      <div class="val">0</div>
+      <div class="lbl">km/soat</div>
+    </div>
+    <div class="loc-stat">
+      <div class="val" style="color:var(--green)">124</div>
+      <div class="lbl">km bugun</div>
+    </div>
+    <div class="loc-stat">
+      <div class="val" style="color:var(--yellow)">41.29°</div>
+      <div class="lbl">Kenglik</div>
+    </div>
+    <div class="loc-stat">
+      <div class="val" style="color:var(--yellow)">69.24°</div>
+      <div class="lbl">Uzunlik</div>
+    </div>
+  </div>
+  <div class="action-row">
+    <button class="action-btn primary" onclick="openInMaps()">🗺️ Yo'nalish olish</button>
+    <button class="action-btn secondary" onclick="shareLocation()">📤 Ulashish</button>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span><span class="nav-label">Asosiy</span></a>
+  <a class="nav-item" href="car-control.html"><span class="nav-icon">🎮</span><span class="nav-label">Boshqaruv</span></a>
+  <a class="nav-item active" href="map.html"><span class="nav-icon">🗺️</span><span class="nav-label">Xarita</span></a>
+  <a class="nav-item" href="statistics.html"><span class="nav-icon">📊</span><span class="nav-label">Statistika</span></a>
+  <a class="nav-item" href="profile.html"><span class="nav-icon">👤</span><span class="nav-label">Profil</span></a>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// Toshkent coordinates
+const carLat = 41.2995, carLng = 69.2401;
+
+const map = L.map('map', { zoomControl: false }).setView([carLat, carLng], 15);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap contributors © CARTO',
+  maxZoom: 19
+}).addTo(map);
+
+// Custom car icon
+const carIcon = L.divIcon({
+  html: `<div style="background:linear-gradient(135deg,#0066ff,#00d4ff);width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 20px rgba(0,212,255,0.6);border:2px solid #00d4ff;">🚗</div>`,
+  className: '', iconSize: [44,44], iconAnchor: [22,22]
+});
+
+const marker = L.marker([carLat, carLng], {icon: carIcon}).addTo(map);
+marker.bindPopup(`<b>GM Cobalt</b><br>01 A 777 AA<br>Toshkent, Chilonzor`).openPopup();
+
+// Route history polyline (demo)
+const routePoints = [
+  [41.2850, 69.2100], [41.2880, 69.2180], [41.2920, 69.2250],
+  [41.2960, 69.2300], [41.2985, 69.2370], [carLat, carLng]
+];
+L.polyline(routePoints, { color: '#00d4ff', weight: 4, opacity: 0.6, dashArray: '10,5' }).addTo(map);
+
+// Start point
+L.circleMarker(routePoints[0], { radius: 8, color: '#00ff88', fillColor: '#00ff88', fillOpacity: 1 })
+  .addTo(map).bindPopup('Boshlanish nuqtasi');
+
+L.control.zoom({ position: 'topright' }).addTo(map);
+
+function centerMap() { map.setView([carLat, carLng], 15); }
+
+function showHistory() {
+  alert('Safarlar tarixi sahifasiga o\'tish...');
+  window.location.href = 'trip-history.html';
+}
+
+function openInMaps() {
+  window.open(`https://www.google.com/maps/dir/?api=1&destination=${carLat},${carLng}`, '_blank');
+}
+
+function shareLocation() {
+  const text = `Mashina joylashuvi: https://maps.google.com/?q=${carLat},${carLng}`;
+  if(navigator.share) {
+    navigator.share({ text, title: 'AutoControl - Mashina joylashuvi' });
+  } else {
+    navigator.clipboard.writeText(text);
+    alert('Havola nusxalandi!');
+  }
+}
+
+// Simulate slight movement
+let angle = 0;
+setInterval(()=>{
+  angle += 0.0001;
+  const newLat = carLat + Math.sin(angle) * 0.0005;
+  const newLng = carLng + Math.cos(angle) * 0.0005;
+  marker.setLatLng([newLat, newLng]);
+  document.querySelector('.loc-stat .val').textContent = (Math.floor(Math.random()*15)) + '';
+}, 3000);
+</script>
+</body>
+</html>

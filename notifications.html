@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoControl — Bildirishnomalar</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#050810; --card:#0d1117;
+    --accent:#00d4ff; --accent2:#0066ff; --green:#00ff88;
+    --red:#ff3366; --orange:#ff8800; --yellow:#ffd700;
+    --text:#e2e8f0; --muted:#64748b; --border:rgba(0,212,255,0.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Exo 2',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:90px; }
+  .topbar {
+    display:flex; align-items:center; justify-content:space-between; padding:16px 20px;
+    background:rgba(13,17,23,0.95); backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100;
+  }
+  .topbar-left { display:flex; align-items:center; gap:14px; }
+  .back-btn {
+    background:rgba(255,255,255,0.06); border:1px solid var(--border);
+    border-radius:10px; width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:16px; text-decoration:none; color:var(--text);
+  }
+  .topbar h1 { font-family:'Orbitron',sans-serif; font-size:15px; font-weight:700; }
+  .mark-all { font-size:12px; color:var(--accent); cursor:pointer; padding:6px 12px; border-radius:8px; border:1px solid var(--border); background:transparent; }
+  .mark-all:hover { background:rgba(0,212,255,0.1); }
+
+  .content { padding:16px 20px; }
+
+  /* Date group */
+  .date-group { margin-bottom:20px; }
+  .date-label {
+    font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase;
+    letter-spacing:1px; margin-bottom:10px; padding:0 4px;
+  }
+
+  /* Notification item */
+  .notif-item {
+    display:flex; gap:14px; padding:16px;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; margin-bottom:8px; cursor:pointer; transition:all 0.2s;
+    position:relative;
+  }
+  .notif-item:hover { border-color:rgba(0,212,255,0.3); background:rgba(0,212,255,0.03); }
+  .notif-item.unread { border-color:rgba(0,212,255,0.25); background:rgba(0,212,255,0.04); }
+  .notif-item.unread::before {
+    content:''; position:absolute; top:16px; left:0;
+    width:3px; height:calc(100% - 32px); border-radius:0 3px 3px 0;
+    background:var(--accent);
+  }
+  .notif-icon-wrap {
+    width:46px; height:46px; border-radius:14px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:22px;
+  }
+  .notif-icon-wrap.alert { background:rgba(255,51,102,0.15); }
+  .notif-icon-wrap.info { background:rgba(0,212,255,0.12); }
+  .notif-icon-wrap.success { background:rgba(0,255,136,0.12); }
+  .notif-icon-wrap.warning { background:rgba(255,136,0,0.15); }
+  .notif-body { flex:1; }
+  .notif-title { font-weight:600; font-size:14px; margin-bottom:4px; }
+  .notif-msg { font-size:13px; color:var(--muted); line-height:1.4; }
+  .notif-time { font-size:11px; color:var(--muted); margin-top:6px; }
+  .notif-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); flex-shrink:0; margin-top:6px; }
+
+  .empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
+  .empty-icon { font-size:50px; margin-bottom:12px; opacity:0.5; }
+
+  /* Filter tabs */
+  .filter-tabs { display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; scrollbar-width:none; }
+  .filter-tabs::-webkit-scrollbar { display:none; }
+  .ftab {
+    flex-shrink:0; padding:8px 16px; border-radius:30px; cursor:pointer;
+    font-size:12px; font-weight:600; transition:all 0.2s; white-space:nowrap;
+    background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--muted);
+  }
+  .ftab.active { background:linear-gradient(135deg,var(--accent2),var(--accent)); border-color:transparent; color:#fff; }
+
+  /* Bottom Nav */
+  .bottom-nav {
+    position:fixed; bottom:0; left:0; right:0;
+    background:rgba(13,17,23,0.97); backdrop-filter:blur(20px);
+    border-top:1px solid var(--border); display:flex; padding:8px 0 12px; z-index:100;
+  }
+  .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; text-decoration:none; padding:6px; }
+  .nav-icon { font-size:22px; }
+  .nav-label { font-size:10px; color:var(--muted); font-weight:500; }
+  .nav-item.active .nav-label { color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="dashboard.html" class="back-btn">←</a>
+    <h1>BILDIRISHNOMALAR</h1>
+  </div>
+  <button class="mark-all" onclick="markAllRead()">Barchasini o'qildi</button>
+</div>
+
+<div class="content">
+  <div class="filter-tabs">
+    <div class="ftab active" onclick="filterNotif(this,'all')">Hammasi</div>
+    <div class="ftab" onclick="filterNotif(this,'alert')">⚠️ Ogohlantirishlar</div>
+    <div class="ftab" onclick="filterNotif(this,'info')">ℹ️ Ma'lumotlar</div>
+    <div class="ftab" onclick="filterNotif(this,'success')">✅ Muvaffaqiyat</div>
+  </div>
+
+  <div id="notifList">
+    <!-- Today -->
+    <div class="date-group">
+      <div class="date-label">📅 Bugun</div>
+
+      <div class="notif-item unread" data-type="alert">
+        <div class="notif-icon-wrap alert">🌡️</div>
+        <div class="notif-body">
+          <div class="notif-title">Motor harorati yuqori!</div>
+          <div class="notif-msg">GM Cobalt motorining harorati 98°C ga ko'tarildi. Darhol to'xtang va tekshiring.</div>
+          <div class="notif-time">🕐 14:32</div>
+        </div>
+        <div class="notif-dot"></div>
+      </div>
+
+      <div class="notif-item unread" data-type="alert">
+        <div class="notif-icon-wrap warning">🔓</div>
+        <div class="notif-body">
+          <div class="notif-title">Mashina qulfi ochiq</div>
+          <div class="notif-msg">GM Cobalt 15 daqiqadan ortiq qulfsiz turibdi. Xavfsizlikni tekshiring.</div>
+          <div class="notif-time">🕐 12:18</div>
+        </div>
+        <div class="notif-dot"></div>
+      </div>
+
+      <div class="notif-item unread" data-type="info">
+        <div class="notif-icon-wrap info">⛽</div>
+        <div class="notif-body">
+          <div class="notif-title">Yoqilg'i kam qoldi</div>
+          <div class="notif-msg">GM Cobaltda yoqilg'i 20% gacha tushdi. Yaqin benzin quyish shoxobchasini toping.</div>
+          <div class="notif-time">🕐 09:45</div>
+        </div>
+        <div class="notif-dot"></div>
+      </div>
+
+      <div class="notif-item" data-type="success">
+        <div class="notif-icon-wrap success">🔒</div>
+        <div class="notif-body">
+          <div class="notif-title">Mashina muvaffaqiyatli qulflandi</div>
+          <div class="notif-msg">GM Cobalt telefon orqali qulflandi. Hamma yaxshi!</div>
+          <div class="notif-time">🕐 08:50</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Yesterday -->
+    <div class="date-group">
+      <div class="date-label">📅 Kecha</div>
+
+      <div class="notif-item" data-type="success">
+        <div class="notif-icon-wrap success">🔑</div>
+        <div class="notif-body">
+          <div class="notif-title">Dvigatel muammosiz yoqildi</div>
+          <div class="notif-msg">GM Cobalt dvigatel 5 soniyada muvaffaqiyatli yoqildi.</div>
+          <div class="notif-time">🕐 Kecha, 17:30</div>
+        </div>
+      </div>
+
+      <div class="notif-item" data-type="info">
+        <div class="notif-icon-wrap info">🔋</div>
+        <div class="notif-body">
+          <div class="notif-title">Akkumulyator zaryadi past</div>
+          <div class="notif-msg">Nexia 3 ning akkumulyatori 30% ga tushdi. Zaryadlashni unutmang.</div>
+          <div class="notif-time">🕐 Kecha, 14:12</div>
+        </div>
+      </div>
+
+      <div class="notif-item" data-type="info">
+        <div class="notif-icon-wrap info">📊</div>
+        <div class="notif-body">
+          <div class="notif-title">Haftalik hisobot tayyor</div>
+          <div class="notif-msg">Bu hafta: 782 km, 64L yoqilg'i sarflandi. Statistikani ko'ring.</div>
+          <div class="notif-time">🕐 Kecha, 22:00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span><span class="nav-label">Asosiy</span></a>
+  <a class="nav-item" href="car-control.html"><span class="nav-icon">🎮</span><span class="nav-label">Boshqaruv</span></a>
+  <a class="nav-item" href="map.html"><span class="nav-icon">🗺️</span><span class="nav-label">Xarita</span></a>
+  <a class="nav-item" href="statistics.html"><span class="nav-icon">📊</span><span class="nav-label">Statistika</span></a>
+  <a class="nav-item" href="profile.html"><span class="nav-icon">👤</span><span class="nav-label">Profil</span></a>
+</div>
+
+<script>
+function markAllRead() {
+  document.querySelectorAll('.notif-item.unread').forEach(el => {
+    el.classList.remove('unread');
+    const dot = el.querySelector('.notif-dot');
+    if(dot) dot.remove();
+  });
+}
+function filterNotif(el, type) {
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.notif-item').forEach(item => {
+    if(type === 'all' || item.dataset.type === type) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+</script>
+</body>
+</html>
