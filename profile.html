@@ -6,295 +6,690 @@
 <title>AutoControl — Profil</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#050810; --card:#0d1117; --card2:#111827;
-    --accent:#00d4ff; --accent2:#0066ff; --green:#00ff88;
-    --red:#ff3366; --orange:#ff8800; --yellow:#ffd700;
-    --text:#e2e8f0; --muted:#64748b; --border:rgba(0,212,255,0.12);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Exo 2',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:90px; }
-  .bg-grid {
-    position:fixed; inset:0;
-    background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
-    background-size:40px 40px; pointer-events:none;
-  }
-  .content { position:relative; z-index:1; }
+:root {
+  --bg:#050810; --card:#0d1117; --card2:#111827;
+  --accent:#00d4ff; --accent2:#0066ff; --green:#00ff88;
+  --red:#ff3366; --orange:#ff8800; --yellow:#ffd700;
+  --text:#e2e8f0; --muted:#64748b; --border:rgba(0,212,255,0.12);
+  --call-green:#00e676; --call-red:#ff1744;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:90px;}
+.bg-grid{
+  position:fixed;inset:0;
+  background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;
+}
+.content{position:relative;z-index:1;}
 
-  /* Hero */
-  .profile-hero {
-    background:linear-gradient(180deg,#0a1628 0%,var(--bg) 100%);
-    padding:40px 20px 24px; text-align:center; position:relative;
-    border-bottom:1px solid var(--border);
-  }
-  .avatar-wrap {
-    position:relative; display:inline-block; margin-bottom:14px;
-  }
-  .avatar-big {
-    width:90px; height:90px; border-radius:50%;
-    background:linear-gradient(135deg,var(--accent2),var(--accent));
-    display:flex; align-items:center; justify-content:center;
-    font-size:40px; margin:0 auto;
-    box-shadow:0 0 30px rgba(0,212,255,0.3);
-    border:3px solid rgba(0,212,255,0.4);
-  }
-  .edit-avatar {
-    position:absolute; bottom:0; right:0;
-    width:28px; height:28px; border-radius:50%;
-    background:var(--accent2); border:2px solid var(--bg);
-    display:flex; align-items:center; justify-content:center;
-    font-size:13px; cursor:pointer;
-  }
-  .profile-name { font-family:'Orbitron',sans-serif; font-size:20px; font-weight:700; }
-  .profile-email { font-size:13px; color:var(--muted); margin-top:5px; }
-  .pro-badge {
-    display:inline-flex; align-items:center; gap:6px;
-    margin-top:10px; padding:5px 14px; border-radius:30px;
-    background:rgba(255,215,0,0.12); border:1px solid rgba(255,215,0,0.3);
-    color:var(--yellow); font-size:12px; font-weight:700;
-  }
+/* ── HERO ── */
+.profile-hero{
+  background:linear-gradient(180deg,#0a1628 0%,var(--bg) 100%);
+  padding:40px 20px 24px;text-align:center;position:relative;
+  border-bottom:1px solid var(--border);
+}
+.avatar-wrap{position:relative;display:inline-block;margin-bottom:14px;}
+.avatar-big{
+  width:90px;height:90px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent2),var(--accent));
+  display:flex;align-items:center;justify-content:center;
+  font-size:40px;margin:0 auto;
+  box-shadow:0 0 30px rgba(0,212,255,0.3);
+  border:3px solid rgba(0,212,255,0.4);
+}
+.edit-avatar{
+  position:absolute;bottom:0;right:0;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--accent2);border:2px solid var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;cursor:pointer;
+}
+.profile-name{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:700;}
+.profile-email{font-size:13px;color:var(--muted);margin-top:5px;}
+.pro-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:10px;padding:5px 14px;border-radius:30px;
+  background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.3);
+  color:var(--yellow);font-size:12px;font-weight:700;
+}
 
-  /* Stats row */
-  .profile-stats {
-    display:grid; grid-template-columns:1fr 1fr 1fr;
-    border-top:1px solid var(--border); border-bottom:1px solid var(--border);
-    background:var(--card);
-  }
-  .ps-item { padding:16px; text-align:center; }
-  .ps-item:not(:last-child) { border-right:1px solid var(--border); }
-  .ps-val { font-family:'Orbitron',sans-serif; font-size:20px; font-weight:700; color:var(--accent); }
-  .ps-lbl { font-size:11px; color:var(--muted); margin-top:3px; }
+/* ── STATS ── */
+.profile-stats{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  background:var(--card);
+}
+.ps-item{padding:16px;text-align:center;}
+.ps-item:not(:last-child){border-right:1px solid var(--border);}
+.ps-val{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:700;color:var(--accent);}
+.ps-lbl{font-size:11px;color:var(--muted);margin-top:3px;}
 
-  /* Section */
-  .section { padding:20px; }
-  .section-title {
-    font-family:'Orbitron',sans-serif; font-size:12px; font-weight:700;
-    color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;
-  }
+/* ── SECTION ── */
+.section{padding:20px;}
+.section-title{
+  font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;
+  color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;
+}
 
-  /* Cars */
-  .car-item {
-    background:var(--card); border:1px solid var(--border);
-    border-radius:18px; padding:16px; margin-bottom:10px;
-    display:flex; align-items:center; gap:14px; cursor:pointer; transition:all 0.2s;
-  }
-  .car-item:hover { border-color:var(--accent); }
-  .car-item.active-car { border-color:var(--accent); background:rgba(0,212,255,0.05); }
-  .car-emoji { font-size:36px; }
-  .car-info { flex:1; }
-  .car-info .name { font-weight:600; font-size:15px; }
-  .car-info .plate { font-size:12px; color:var(--muted); margin-top:2px; }
-  .car-info .fuel-mark {
-    display:inline-block; margin-top:6px; padding:2px 8px;
-    border-radius:6px; font-size:11px; font-weight:700;
-    background:rgba(255,136,0,0.15); color:var(--orange);
-    border:1px solid rgba(255,136,0,0.3);
-  }
-  .car-status { text-align:right; }
-  .car-dot { width:10px; height:10px; border-radius:50%; margin-left:auto; margin-bottom:6px; }
-  .car-dot.on { background:var(--green); box-shadow:0 0 8px var(--green); animation:pulse 1.5s infinite; }
-  .car-dot.off { background:var(--muted); }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .car-km { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; }
+/* ── CARS ── */
+.car-item{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;padding:16px;margin-bottom:10px;
+  display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;
+}
+.car-item:hover{border-color:var(--accent);}
+.car-item.active-car{border-color:var(--accent);background:rgba(0,212,255,0.05);}
+.car-emoji{font-size:36px;}
+.car-info{flex:1;}
+.car-info .name{font-weight:600;font-size:15px;}
+.car-info .plate{font-size:12px;color:var(--muted);margin-top:2px;}
+.fuel-mark{
+  display:inline-block;margin-top:6px;padding:2px 8px;
+  border-radius:6px;font-size:11px;font-weight:700;
+  background:rgba(255,136,0,0.15);color:var(--orange);
+  border:1px solid rgba(255,136,0,0.3);
+}
+.car-status{text-align:right;}
+.car-dot{width:10px;height:10px;border-radius:50%;margin-left:auto;margin-bottom:6px;}
+.car-dot.on{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.5s infinite;}
+.car-dot.off{background:var(--muted);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.car-km{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;}
 
-  .add-car-btn {
-    width:100%; padding:16px; border-radius:18px;
-    border:2px dashed rgba(0,212,255,0.3); background:transparent;
-    color:var(--accent); font-family:'Exo 2',sans-serif; font-size:14px; font-weight:600;
-    cursor:pointer; transition:all 0.25s; display:flex; align-items:center; justify-content:center; gap:8px;
-  }
-  .add-car-btn:hover { border-color:var(--accent); background:rgba(0,212,255,0.05); }
+.add-car-btn{
+  width:100%;padding:16px;border-radius:18px;
+  border:2px dashed rgba(0,212,255,0.3);background:transparent;
+  color:var(--accent);font-family:'Exo 2',sans-serif;font-size:14px;font-weight:600;
+  cursor:pointer;transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.add-car-btn:hover{border-color:var(--accent);background:rgba(0,212,255,0.05);}
 
-  /* Menu items */
-  .menu-list { background:var(--card); border:1px solid var(--border); border-radius:18px; overflow:hidden; }
-  .menu-item {
-    display:flex; align-items:center; gap:14px; padding:16px;
-    cursor:pointer; transition:all 0.2s; text-decoration:none; color:var(--text);
-  }
-  .menu-item:not(:last-child) { border-bottom:1px solid rgba(255,255,255,0.04); }
-  .menu-item:hover { background:rgba(255,255,255,0.03); }
-  .menu-icon {
-    width:38px; height:38px; border-radius:10px;
-    display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
-  }
-  .menu-text { flex:1; }
-  .menu-label { font-size:14px; font-weight:500; }
-  .menu-sub { font-size:12px; color:var(--muted); margin-top:2px; }
-  .menu-arrow { color:var(--muted); font-size:14px; }
-  .menu-badge {
-    padding:3px 8px; border-radius:6px; font-size:11px; font-weight:700;
-    background:rgba(0,212,255,0.15); color:var(--accent);
-  }
+/* ── MENU ── */
+.menu-list{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;}
+.menu-item{
+  display:flex;align-items:center;gap:14px;padding:16px;
+  cursor:pointer;transition:all 0.2s;text-decoration:none;color:var(--text);
+}
+.menu-item:not(:last-child){border-bottom:1px solid rgba(255,255,255,0.04);}
+.menu-item:hover{background:rgba(255,255,255,0.03);}
+.menu-icon{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
+}
+.menu-text{flex:1;}
+.menu-label{font-size:14px;font-weight:500;}
+.menu-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.menu-arrow{color:var(--muted);font-size:14px;}
+.menu-badge{
+  padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;
+  background:rgba(0,212,255,0.15);color:var(--accent);
+}
 
-  /* Subscription card */
-  .sub-card {
-    background:linear-gradient(135deg,#1a1000,#2a1a00);
-    border:1px solid rgba(255,215,0,0.3); border-radius:20px; padding:20px;
-    display:flex; align-items:center; gap:16px;
-  }
-  .sub-icon { font-size:40px; }
-  .sub-info { flex:1; }
-  .sub-info h3 { font-family:'Orbitron',sans-serif; font-size:15px; color:var(--yellow); }
-  .sub-info p { font-size:12px; color:var(--muted); margin-top:4px; }
-  .sub-btn {
-    padding:10px 18px; border-radius:12px;
-    background:linear-gradient(135deg,#8B6914,var(--yellow));
-    border:none; color:#000; font-weight:700; font-size:13px; cursor:pointer;
-    white-space:nowrap;
-  }
+/* ── SUBSCRIPTION ── */
+.sub-card{
+  background:linear-gradient(135deg,#1a1000,#2a1a00);
+  border:1px solid rgba(255,215,0,0.3);border-radius:20px;padding:20px;
+  display:flex;align-items:center;gap:16px;
+}
+.sub-icon{font-size:40px;}
+.sub-info{flex:1;}
+.sub-info h3{font-family:'Orbitron',sans-serif;font-size:15px;color:var(--yellow);}
+.sub-info p{font-size:12px;color:var(--muted);margin-top:4px;}
+.sub-btn{
+  padding:10px 18px;border-radius:12px;
+  background:linear-gradient(135deg,#8B6914,var(--yellow));
+  border:none;color:#000;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;
+}
 
-  /* Logout */
-  .logout-btn {
-    width:100%; padding:16px; border-radius:16px;
-    background:rgba(255,51,102,0.1); border:1px solid rgba(255,51,102,0.3);
-    color:var(--red); font-family:'Exo 2',sans-serif; font-size:14px; font-weight:600;
-    cursor:pointer; transition:all 0.25s;
-  }
-  .logout-btn:hover { background:rgba(255,51,102,0.2); }
+/* ── LOGOUT ── */
+.logout-btn{
+  width:100%;padding:16px;border-radius:16px;
+  background:rgba(255,51,102,0.1);border:1px solid rgba(255,51,102,0.3);
+  color:var(--red);font-family:'Exo 2',sans-serif;font-size:14px;font-weight:600;
+  cursor:pointer;transition:all 0.25s;
+}
+.logout-btn:hover{background:rgba(255,51,102,0.2);}
 
-  /* Bottom Nav */
-  .bottom-nav {
-    position:fixed; bottom:0; left:0; right:0;
-    background:rgba(13,17,23,0.97); backdrop-filter:blur(20px);
-    border-top:1px solid var(--border);
-    display:flex; padding:8px 0 12px; z-index:100;
-  }
-  .nav-item {
-    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
-    cursor:pointer; text-decoration:none; padding:6px;
-  }
-  .nav-icon { font-size:22px; }
-  .nav-label { font-size:10px; color:var(--muted); font-weight:500; }
-  .nav-item.active .nav-label { color:var(--accent); }
+/* ═══════════════════════════════════
+   📞 ESP32 QOʻNGIROQ PANELI
+═══════════════════════════════════ */
+.call-section{
+  margin:0 20px 0;
+  background:linear-gradient(135deg,rgba(0,20,10,0.9),rgba(0,40,20,0.6));
+  border:1px solid rgba(0,230,118,0.25);border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 0 40px rgba(0,230,118,0.05);
+}
+.call-header{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 18px 12px;
+  border-bottom:1px solid rgba(0,230,118,0.1);
+}
+.call-header-icon{
+  width:42px;height:42px;border-radius:12px;
+  background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.2);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.call-header-text{flex:1;}
+.call-header-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--call-green);}
+.call-header-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.call-status-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--call-green);box-shadow:0 0 8px var(--call-green);
+  animation:pulse 1.8s infinite;
+}
+
+/* Device selector */
+.device-list{padding:12px 16px;display:flex;flex-direction:column;gap:8px;}
+.device-card{
+  display:flex;align-items:center;gap:12px;padding:13px 14px;
+  border-radius:14px;border:1px solid rgba(0,230,118,0.1);
+  background:rgba(0,0,0,0.3);cursor:pointer;transition:all 0.22s;
+  -webkit-tap-highlight-color:transparent;
+}
+.device-card:hover,.device-card.selected{
+  border-color:rgba(0,230,118,0.4);
+  background:rgba(0,230,118,0.06);
+}
+.device-card.selected{box-shadow:0 0 16px rgba(0,230,118,0.08);}
+.device-icon{font-size:22px;flex-shrink:0;}
+.device-info{flex:1;}
+.device-name{font-size:14px;font-weight:600;}
+.device-id{font-size:11px;color:var(--muted);font-family:'Orbitron',sans-serif;margin-top:2px;}
+.device-online{
+  display:flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:600;
+}
+.device-online.on{color:var(--call-green);}
+.device-online.off{color:var(--muted);}
+.donline-dot{width:7px;height:7px;border-radius:50%;}
+.donline-dot.on{background:var(--call-green);box-shadow:0 0 6px var(--call-green);animation:pulse 1.5s infinite;}
+.donline-dot.off{background:var(--muted);}
+.device-select-radio{
+  width:18px;height:18px;border-radius:50%;
+  border:2px solid rgba(0,230,118,0.3);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;transition:all 0.2s;
+}
+.device-card.selected .device-select-radio{border-color:var(--call-green);}
+.device-select-radio::after{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:var(--call-green);opacity:0;transform:scale(0);transition:all 0.2s;
+}
+.device-card.selected .device-select-radio::after{opacity:1;transform:scale(1);}
+
+/* Dial pad */
+.dialpad-wrap{padding:0 16px 14px;}
+.dialpad-label{
+  font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:2px;
+  color:var(--muted);text-transform:uppercase;margin-bottom:10px;
+}
+.dial-display{
+  background:rgba(0,0,0,0.4);border:1px solid rgba(0,230,118,0.15);
+  border-radius:12px;padding:12px 16px;margin-bottom:12px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.dial-number{
+  font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;
+  color:var(--call-green);letter-spacing:2px;min-height:30px;
+  flex:1;
+}
+.dial-backspace{
+  background:none;border:none;color:var(--muted);font-size:20px;
+  cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;
+  transition:color 0.2s;
+}
+.dial-backspace:hover{color:var(--red);}
+.dialpad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+.dial-btn{
+  background:rgba(255,255,255,0.04);border:1px solid rgba(0,230,118,0.1);
+  border-radius:12px;padding:14px 8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.15s;-webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+.dial-btn:active{background:rgba(0,230,118,0.1);border-color:rgba(0,230,118,0.3);transform:scale(0.95);}
+.dial-num{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:700;color:var(--text);}
+.dial-sub{font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:1px;}
+.dial-btn.zero{grid-column:2;}
+.dial-btn.star{grid-column:1;}
+.dial-btn.hash{grid-column:3;}
+
+/* Call action buttons */
+.call-actions{display:flex;gap:10px;padding:0 16px 16px;}
+
+.call-btn{
+  flex:1;padding:16px;border-radius:16px;border:none;
+  font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;
+  letter-spacing:1px;cursor:pointer;transition:all 0.25s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  -webkit-tap-highlight-color:transparent;
+}
+.call-btn.call-start{
+  background:linear-gradient(135deg,#00b248,var(--call-green));
+  color:#000;box-shadow:0 4px 20px rgba(0,230,118,0.3);
+}
+.call-btn.call-start:hover{box-shadow:0 6px 28px rgba(0,230,118,0.5);transform:translateY(-1px);}
+.call-btn.call-start:active{transform:scale(0.97);}
+.call-btn.call-start.ringing{
+  animation:callPulse 0.8s ease-in-out infinite alternate;
+}
+@keyframes callPulse{
+  from{box-shadow:0 4px 20px rgba(0,230,118,0.3);}
+  to{box-shadow:0 4px 40px rgba(0,230,118,0.7),0 0 0 8px rgba(0,230,118,0.1);}
+}
+.call-btn.call-end{
+  background:linear-gradient(135deg,#b20014,var(--call-red));
+  color:#fff;box-shadow:0 4px 20px rgba(255,23,68,0.3);
+  display:none;
+}
+.call-btn.call-end:hover{box-shadow:0 6px 28px rgba(255,23,68,0.5);}
+.call-btn.sms-btn{
+  background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.25);
+  color:var(--accent);flex:0 0 auto;width:54px;padding:16px 0;
+}
+.call-btn.sms-btn:hover{background:rgba(0,212,255,0.2);}
+
+/* Call state overlay card */
+.call-state-card{
+  margin:0 16px 14px;padding:14px 16px;
+  background:rgba(0,0,0,0.4);border:1px solid rgba(0,230,118,0.2);
+  border-radius:14px;display:none;
+}
+.call-state-card.active{display:flex;align-items:center;gap:12px;}
+.call-state-anim{
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(0,230,118,0.1);border:2px solid var(--call-green);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  animation:callPulse 1s infinite alternate;flex-shrink:0;
+}
+.call-state-info{flex:1;}
+.call-state-label{font-size:13px;font-weight:600;color:var(--call-green);}
+.call-state-detail{font-size:11px;color:var(--muted);margin-top:3px;font-family:'Orbitron',sans-serif;}
+.call-timer{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--call-green);}
+
+/* DTMF quick commands */
+.dtmf-commands{padding:0 16px 16px;}
+.dtmf-title{
+  font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:2px;
+  color:var(--muted);text-transform:uppercase;margin-bottom:10px;
+}
+.dtmf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.dtmf-btn{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(0,212,255,0.1);
+  border-radius:12px;cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent;
+}
+.dtmf-btn:active{transform:scale(0.97);background:rgba(0,212,255,0.08);}
+.dtmf-key{
+  width:30px;height:30px;border-radius:8px;flex-shrink:0;
+  background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--accent);
+}
+.dtmf-info{flex:1;}
+.dtmf-action{font-size:12px;font-weight:600;}
+.dtmf-desc{font-size:10px;color:var(--muted);margin-top:1px;}
+.dtmf-icon{font-size:16px;}
+
+/* Log */
+.call-log{padding:0 16px 16px;}
+.call-log-title{
+  font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:2px;
+  color:var(--muted);text-transform:uppercase;margin-bottom:10px;
+}
+.call-log-list{display:flex;flex-direction:column;gap:6px;max-height:160px;overflow-y:auto;}
+.call-log-item{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;
+  background:rgba(0,0,0,0.3);border-radius:10px;font-size:12px;
+  border-left:3px solid transparent;
+}
+.call-log-item.success{border-left-color:var(--call-green);}
+.call-log-item.error{border-left-color:var(--call-red);}
+.call-log-item.info{border-left-color:var(--accent);}
+.log-ico{font-size:14px;flex-shrink:0;}
+.log-text{flex:1;color:var(--text);}
+.log-time{color:var(--muted);font-size:10px;font-family:'Orbitron',sans-serif;}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:rgba(13,17,23,0.97);border:1px solid var(--accent);
+  border-radius:14px;padding:12px 20px;font-size:13px;font-weight:600;
+  color:var(--accent);z-index:9999;opacity:0;transition:all 0.35s;
+  white-space:nowrap;pointer-events:none;backdrop-filter:blur(12px);
+  display:flex;align-items:center;gap:8px;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.success{border-color:var(--call-green);color:var(--call-green);}
+.toast.error{border-color:var(--call-red);color:var(--call-red);}
+
+/* Inbound call overlay */
+.inbound-overlay{
+  position:fixed;inset:0;z-index:9000;
+  background:rgba(3,5,10,0.92);backdrop-filter:blur(16px);
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+}
+.inbound-overlay.show{display:flex;}
+.inbound-avatar{
+  width:100px;height:100px;border-radius:50%;
+  background:linear-gradient(135deg,#004d1a,var(--call-green));
+  display:flex;align-items:center;justify-content:center;font-size:50px;
+  box-shadow:0 0 0 0 rgba(0,230,118,0.4);
+  animation:inboundRing 1.5s infinite;
+}
+@keyframes inboundRing{
+  0%{box-shadow:0 0 0 0 rgba(0,230,118,0.4);}
+  70%{box-shadow:0 0 0 30px rgba(0,230,118,0);}
+  100%{box-shadow:0 0 0 0 rgba(0,230,118,0);}
+}
+.inbound-label{font-family:'Orbitron',sans-serif;font-size:16px;color:var(--call-green);}
+.inbound-from{font-size:13px;color:var(--muted);}
+.inbound-btns{display:flex;gap:40px;margin-top:10px;}
+.inbound-accept{
+  width:68px;height:68px;border-radius:50%;background:var(--call-green);
+  border:none;font-size:28px;cursor:pointer;
+  box-shadow:0 0 24px rgba(0,230,118,0.5);
+  -webkit-tap-highlight-color:transparent;
+}
+.inbound-decline{
+  width:68px;height:68px;border-radius:50%;background:var(--call-red);
+  border:none;font-size:28px;cursor:pointer;
+  box-shadow:0 0 24px rgba(255,23,68,0.4);
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(13,17,23,0.97);backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;padding:8px 0 12px;z-index:100;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;text-decoration:none;padding:6px;
+}
+.nav-icon{font-size:22px;}
+.nav-label{font-size:10px;color:var(--muted);font-weight:500;}
+.nav-item.active .nav-label{color:var(--accent);}
 </style>
 </head>
 <body>
 <div class="bg-grid"></div>
 <div class="content">
 
-  <!-- Hero -->
-  <div class="profile-hero">
-    <div class="avatar-wrap">
-      <div class="avatar-big">👤</div>
-      <div class="edit-avatar">✏️</div>
-    </div>
-    <div class="profile-name" id="pName">Foydalanuvchi</div>
-    <div class="profile-email" id="pEmail">user@gmail.com</div>
-    <div class="pro-badge">⭐ PRO obuna • $3/oy</div>
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Inbound call overlay -->
+<div class="inbound-overlay" id="inboundOverlay">
+  <div class="inbound-avatar">📟</div>
+  <div class="inbound-label">Kiruvchi qo'ng'iroq</div>
+  <div class="inbound-from" id="inboundFrom">ESP32 — Cobalt 01</div>
+  <div class="inbound-btns">
+    <button class="inbound-accept" onclick="acceptInbound()">📞</button>
+    <button class="inbound-decline" onclick="declineInbound()">📵</button>
   </div>
-
-  <!-- Stats -->
-  <div class="profile-stats">
-    <div class="ps-item">
-      <div class="ps-val">2</div>
-      <div class="ps-lbl">Mashinalar</div>
-    </div>
-    <div class="ps-item">
-      <div class="ps-val">3,240</div>
-      <div class="ps-lbl">Oy km</div>
-    </div>
-    <div class="ps-item">
-      <div class="ps-val">7</div>
-      <div class="ps-lbl">Safarlar</div>
-    </div>
-  </div>
-
-  <!-- My Cars -->
-  <div class="section">
-    <div class="section-title">🚗 Mening mashinalarim</div>
-
-    <div class="car-item active-car">
-      <div class="car-emoji">🚗</div>
-      <div class="car-info">
-        <div class="name">GM Cobalt</div>
-        <div class="plate">01 A 777 AA · 2021</div>
-        <span class="fuel-mark">AI-92</span>
-      </div>
-      <div class="car-status">
-        <div class="car-dot on"></div>
-        <div class="car-km" style="color:var(--green)">Online</div>
-      </div>
-    </div>
-
-    <div class="car-item">
-      <div class="car-emoji">🚙</div>
-      <div class="car-info">
-        <div class="name">Chevrolet Nexia 3</div>
-        <div class="plate">10 B 432 BA · 2019</div>
-        <span class="fuel-mark">AI-91</span>
-      </div>
-      <div class="car-status">
-        <div class="car-dot off"></div>
-        <div class="car-km" style="color:var(--muted)">Offline</div>
-      </div>
-    </div>
-
-    <button class="add-car-btn" onclick="window.location.href='add-car.html'">
-      ➕ Yangi mashina qo'shish
-    </button>
-  </div>
-
-  <!-- Subscription -->
-  <div class="section" style="padding-top:0">
-    <div class="section-title">💳 Obuna</div>
-    <div class="sub-card">
-      <div class="sub-icon">⭐</div>
-      <div class="sub-info">
-        <h3>PRO Obuna</h3>
-        <p>Keyingi to'lov: 5-aprel 2025<br>$3.00 / oy</p>
-      </div>
-      <button class="sub-btn" onclick="window.location.href='subscription.html'">Boshqarish</button>
-    </div>
-  </div>
-
-  <!-- Menu -->
-  <div class="section" style="padding-top:0">
-    <div class="section-title">⚙️ Sozlamalar</div>
-    <div class="menu-list">
-      <a class="menu-item" href="settings.html">
-        <div class="menu-icon" style="background:rgba(0,212,255,0.1)">🔔</div>
-        <div class="menu-text">
-          <div class="menu-label">Bildirishnomalar</div>
-          <div class="menu-sub">Push, SMS sozlamalari</div>
-        </div>
-        <span class="menu-arrow">›</span>
-      </a>
-      <a class="menu-item" href="alerts.html">
-        <div class="menu-icon" style="background:rgba(255,136,0,0.1)">⚠️</div>
-        <div class="menu-text">
-          <div class="menu-label">Ogohlantirishlar</div>
-          <div class="menu-sub">Harorat, qulf, batareya chegaralari</div>
-        </div>
-        <span class="menu-badge">3</span>
-        <span class="menu-arrow" style="margin-left:8px">›</span>
-      </a>
-      <a class="menu-item" href="#">
-        <div class="menu-icon" style="background:rgba(0,255,136,0.1)">🔒</div>
-        <div class="menu-text">
-          <div class="menu-label">Xavfsizlik</div>
-          <div class="menu-sub">Parol, 2FA</div>
-        </div>
-        <span class="menu-arrow">›</span>
-      </a>
-      <a class="menu-item" href="#">
-        <div class="menu-icon" style="background:rgba(255,51,102,0.1)">🌐</div>
-        <div class="menu-text">
-          <div class="menu-label">Til</div>
-          <div class="menu-sub">O'zbek (UZ)</div>
-        </div>
-        <span class="menu-arrow">›</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- Logout -->
-  <div class="section" style="padding-top:0">
-    <button class="logout-btn" onclick="doLogout()">🚪 Chiqish</button>
-  </div>
-
 </div>
 
+<!-- ── HERO ── -->
+<div class="profile-hero">
+  <div class="avatar-wrap">
+    <div class="avatar-big">👤</div>
+    <div class="edit-avatar">✏️</div>
+  </div>
+  <div class="profile-name" id="pName">Foydalanuvchi</div>
+  <div class="profile-email" id="pEmail">user@mail.com</div>
+  <div class="pro-badge">⭐ PRO obuna • $3/oy</div>
+</div>
+
+<!-- ── STATS ── -->
+<div class="profile-stats">
+  <div class="ps-item"><div class="ps-val">2</div><div class="ps-lbl">Mashinalar</div></div>
+  <div class="ps-item"><div class="ps-val">3,240</div><div class="ps-lbl">Oy km</div></div>
+  <div class="ps-item"><div class="ps-val">7</div><div class="ps-lbl">Safarlar</div></div>
+</div>
+
+<!-- ── MASHINALAR ── -->
+<div class="section">
+  <div class="section-title">🚗 Mening mashinalarim</div>
+  <div class="car-item active-car">
+    <div class="car-emoji">🚗</div>
+    <div class="car-info">
+      <div class="name">GM Cobalt</div>
+      <div class="plate">01 A 777 AA · 2021</div>
+      <span class="fuel-mark">AI-92</span>
+    </div>
+    <div class="car-status">
+      <div class="car-dot on"></div>
+      <div class="car-km" style="color:var(--green)">Online</div>
+    </div>
+  </div>
+  <div class="car-item">
+    <div class="car-emoji">🚙</div>
+    <div class="car-info">
+      <div class="name">Chevrolet Nexia 3</div>
+      <div class="plate">10 B 432 BA · 2019</div>
+      <span class="fuel-mark">AI-91</span>
+    </div>
+    <div class="car-status">
+      <div class="car-dot off"></div>
+      <div class="car-km" style="color:var(--muted)">Offline</div>
+    </div>
+  </div>
+  <button class="add-car-btn" onclick="window.location.href='add-car.html'">
+    ➕ Yangi mashina qo'shish
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════
+     📞 ESP32 QOINGIROQ PANELI
+════════════════════════════════════ -->
+<div class="section" style="padding-top:0">
+  <div class="section-title">📞 ESP32 Qurilmaga qo'ng'iroq</div>
+
+  <div class="call-section">
+
+    <!-- Header -->
+    <div class="call-header">
+      <div class="call-header-icon">📡</div>
+      <div class="call-header-text">
+        <div class="call-header-title">GSM / SIM7600 Aloqa</div>
+        <div class="call-header-sub">Ovozli buyruq · DTMF signal</div>
+      </div>
+      <div class="call-status-dot" id="simStatusDot"></div>
+    </div>
+
+    <!-- Device selector -->
+    <div class="device-list">
+      <div class="device-card selected" id="dev0" onclick="selectDevice(0)">
+        <div class="device-icon">🚗</div>
+        <div class="device-info">
+          <div class="device-name">GM Cobalt</div>
+          <div class="device-id">SIM: +998901234567</div>
+        </div>
+        <div class="device-online on"><div class="donline-dot on"></div>Online</div>
+        <div class="device-select-radio"></div>
+      </div>
+      <div class="device-card" id="dev1" onclick="selectDevice(1)">
+        <div class="device-icon">🚙</div>
+        <div class="device-info">
+          <div class="device-name">Nexia 3</div>
+          <div class="device-id">SIM: +998907654321</div>
+        </div>
+        <div class="device-online off"><div class="donline-dot off"></div>Offline</div>
+        <div class="device-select-radio"></div>
+      </div>
+    </div>
+
+    <!-- Dial display -->
+    <div class="dialpad-wrap">
+      <div class="dialpad-label">Raqam terish</div>
+      <div class="dial-display">
+        <div class="dial-number" id="dialDisplay">+998901234567</div>
+        <button class="dial-backspace" onclick="dialBackspace()" title="O'chirish">⌫</button>
+      </div>
+
+      <!-- Dialpad grid -->
+      <div class="dialpad">
+        <div class="dial-btn" onclick="dialPress('1')"><div class="dial-num">1</div><div class="dial-sub"></div></div>
+        <div class="dial-btn" onclick="dialPress('2')"><div class="dial-num">2</div><div class="dial-sub">ABC</div></div>
+        <div class="dial-btn" onclick="dialPress('3')"><div class="dial-num">3</div><div class="dial-sub">DEF</div></div>
+        <div class="dial-btn" onclick="dialPress('4')"><div class="dial-num">4</div><div class="dial-sub">GHI</div></div>
+        <div class="dial-btn" onclick="dialPress('5')"><div class="dial-num">5</div><div class="dial-sub">JKL</div></div>
+        <div class="dial-btn" onclick="dialPress('6')"><div class="dial-num">6</div><div class="dial-sub">MNO</div></div>
+        <div class="dial-btn" onclick="dialPress('7')"><div class="dial-num">7</div><div class="dial-sub">PQRS</div></div>
+        <div class="dial-btn" onclick="dialPress('8')"><div class="dial-num">8</div><div class="dial-sub">TUV</div></div>
+        <div class="dial-btn" onclick="dialPress('9')"><div class="dial-num">9</div><div class="dial-sub">WXYZ</div></div>
+        <div class="dial-btn star" onclick="dialPress('*')"><div class="dial-num">*</div><div class="dial-sub"></div></div>
+        <div class="dial-btn zero" onclick="dialPress('0')"><div class="dial-num">0</div><div class="dial-sub">+</div></div>
+        <div class="dial-btn hash" onclick="dialPress('#')"><div class="dial-num">#</div><div class="dial-sub"></div></div>
+      </div>
+    </div>
+
+    <!-- Call state card (ko'rinmaydi boshida) -->
+    <div class="call-state-card" id="callStateCard">
+      <div class="call-state-anim">📞</div>
+      <div class="call-state-info">
+        <div class="call-state-label" id="callStateLabel">Ulanmoqda...</div>
+        <div class="call-state-detail" id="callStateDevice">ESP32 — Cobalt</div>
+      </div>
+      <div class="call-timer" id="callTimer">00:00</div>
+    </div>
+
+    <!-- Call buttons -->
+    <div class="call-actions">
+      <button class="call-btn sms-btn" onclick="sendSMSCommand()" title="SMS buyruq">💬</button>
+      <button class="call-btn call-start" id="callStartBtn" onclick="startCall()">
+        📞 &nbsp;Qo'ng'iroq
+      </button>
+      <button class="call-btn call-end" id="callEndBtn" onclick="endCall()">
+        📵 &nbsp;Tugatish
+      </button>
+    </div>
+
+    <!-- DTMF quick commands (qo'ng'iroq paytida) -->
+    <div class="dtmf-commands" id="dtmfPanel" style="display:none">
+      <div class="dtmf-title">⌨️ Tez buyruqlar (DTMF)</div>
+      <div class="dtmf-grid">
+        <div class="dtmf-btn" onclick="sendDTMF('1','lock')">
+          <div class="dtmf-key">1</div>
+          <div class="dtmf-info"><div class="dtmf-action">Qulflash</div><div class="dtmf-desc">DTMF "1" yuboradi</div></div>
+          <div class="dtmf-icon">🔒</div>
+        </div>
+        <div class="dtmf-btn" onclick="sendDTMF('2','unlock')">
+          <div class="dtmf-key">2</div>
+          <div class="dtmf-info"><div class="dtmf-action">Ochish</div><div class="dtmf-desc">DTMF "2" yuboradi</div></div>
+          <div class="dtmf-icon">🔓</div>
+        </div>
+        <div class="dtmf-btn" onclick="sendDTMF('3','engine_on')">
+          <div class="dtmf-key">3</div>
+          <div class="dtmf-info"><div class="dtmf-action">Dvigatel Yoq</div><div class="dtmf-desc">DTMF "3" yuboradi</div></div>
+          <div class="dtmf-icon">🔑</div>
+        </div>
+        <div class="dtmf-btn" onclick="sendDTMF('4','engine_off')">
+          <div class="dtmf-key">4</div>
+          <div class="dtmf-info"><div class="dtmf-action">Dvigatel O'ch</div><div class="dtmf-desc">DTMF "4" yuboradi</div></div>
+          <div class="dtmf-icon">⛔</div>
+        </div>
+        <div class="dtmf-btn" onclick="sendDTMF('5','horn')">
+          <div class="dtmf-key">5</div>
+          <div class="dtmf-info"><div class="dtmf-action">Signal</div><div class="dtmf-desc">DTMF "5" yuboradi</div></div>
+          <div class="dtmf-icon">📣</div>
+        </div>
+        <div class="dtmf-btn" onclick="sendDTMF('6','status')">
+          <div class="dtmf-key">6</div>
+          <div class="dtmf-info"><div class="dtmf-action">Holat so'rash</div><div class="dtmf-desc">DTMF "6" yuboradi</div></div>
+          <div class="dtmf-icon">📊</div>
+        </div>
+        <div class="dtmf-btn" onclick="sendDTMF('9','alarm')">
+          <div class="dtmf-key">9</div>
+          <div class="dtmf-info"><div class="dtmf-action">Alarm</div><div class="dtmf-desc">DTMF "9" yuboradi</div></div>
+          <div class="dtmf-icon">🚨</div>
+        </div>
+        <div class="dtmf-btn" onclick="sendDTMF('0','gps')">
+          <div class="dtmf-key">0</div>
+          <div class="dtmf-info"><div class="dtmf-action">GPS SMS</div><div class="dtmf-desc">DTMF "0" yuboradi</div></div>
+          <div class="dtmf-icon">📍</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Qo'ng'iroq log -->
+    <div class="call-log">
+      <div class="call-log-title">📋 So'nggi amallar</div>
+      <div class="call-log-list" id="callLog">
+        <div class="call-log-item info">
+          <div class="log-ico">📡</div>
+          <div class="log-text">SIM7600 moduli ulandi</div>
+          <div class="log-time">bugun</div>
+        </div>
+        <div class="call-log-item success">
+          <div class="log-ico">🔒</div>
+          <div class="log-text">Qulflash buyrug'i bajarildi</div>
+          <div class="log-time">08:32</div>
+        </div>
+        <div class="call-log-item success">
+          <div class="log-ico">📞</div>
+          <div class="log-text">Qo'ng'iroq — 01:24 — GM Cobalt</div>
+          <div class="log-time">08:15</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /call-section -->
+</div>
+
+<!-- ── OBUNA ── -->
+<div class="section" style="padding-top:0">
+  <div class="section-title">💳 Obuna</div>
+  <div class="sub-card">
+    <div class="sub-icon">⭐</div>
+    <div class="sub-info">
+      <h3>PRO Obuna</h3>
+      <p>Keyingi to'lov: 5-aprel 2025<br>$3.00 / oy</p>
+    </div>
+    <button class="sub-btn" onclick="window.location.href='subscription.html'">Boshqarish</button>
+  </div>
+</div>
+
+<!-- ── SOZLAMALAR ── -->
+<div class="section" style="padding-top:0">
+  <div class="section-title">⚙️ Sozlamalar</div>
+  <div class="menu-list">
+    <a class="menu-item" href="settings.html">
+      <div class="menu-icon" style="background:rgba(0,212,255,0.1)">🔔</div>
+      <div class="menu-text"><div class="menu-label">Bildirishnomalar</div><div class="menu-sub">Push, SMS sozlamalari</div></div>
+      <span class="menu-arrow">›</span>
+    </a>
+    <a class="menu-item" href="alerts.html">
+      <div class="menu-icon" style="background:rgba(255,136,0,0.1)">⚠️</div>
+      <div class="menu-text"><div class="menu-label">Ogohlantirishlar</div><div class="menu-sub">Harorat, qulf, batareya chegaralari</div></div>
+      <span class="menu-badge">3</span>
+      <span class="menu-arrow" style="margin-left:8px">›</span>
+    </a>
+    <a class="menu-item" href="#">
+      <div class="menu-icon" style="background:rgba(0,255,136,0.1)">🔒</div>
+      <div class="menu-text"><div class="menu-label">Xavfsizlik</div><div class="menu-sub">Parol, 2FA</div></div>
+      <span class="menu-arrow">›</span>
+    </a>
+    <a class="menu-item" href="#">
+      <div class="menu-icon" style="background:rgba(255,51,102,0.1)">🌐</div>
+      <div class="menu-text"><div class="menu-label">Til</div><div class="menu-sub">O'zbek (UZ)</div></div>
+      <span class="menu-arrow">›</span>
+    </a>
+  </div>
+</div>
+
+<!-- ── CHIQISH ── -->
+<div class="section" style="padding-top:0">
+  <button class="logout-btn" onclick="doLogout()">🚪 Chiqish</button>
+</div>
+
+</div><!-- /content -->
+
+<!-- ── BOTTOM NAV ── -->
 <div class="bottom-nav">
   <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span><span class="nav-label">Asosiy</span></a>
   <a class="nav-item" href="car-control.html"><span class="nav-icon">🎮</span><span class="nav-label">Boshqaruv</span></a>
@@ -304,16 +699,398 @@
 </div>
 
 <script>
+// ═══════════════════════════════════════════
+//   PROFIL
+// ═══════════════════════════════════════════
 const user = JSON.parse(localStorage.getItem('autocontrol_user') || '{}');
-if(user.name) document.getElementById('pName').textContent = user.name;
+if(user.name)  document.getElementById('pName').textContent  = user.name;
 if(user.email) document.getElementById('pEmail').textContent = user.email;
 
-function doLogout() {
-  if(confirm('Chiqishni tasdiqlaysizmi?')) {
-    localStorage.removeItem('autocontrol_user');
-    window.location.href = 'index.html';
+function doLogout(){
+  localStorage.removeItem('autocontrol_user');
+  window.location.href = 'index.html';
+}
+
+// ═══════════════════════════════════════════
+//   TOAST
+// ═══════════════════════════════════════════
+function showToast(msg, type='info', duration=2800){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.className = 'toast'; }, duration);
+}
+
+// ═══════════════════════════════════════════
+//   QURILMA TANLASH
+// ═══════════════════════════════════════════
+const devices = [
+  { name:'GM Cobalt',    sim:'+998901234567', online:true  },
+  { name:'Nexia 3',      sim:'+998907654321', online:false }
+];
+let selectedDevice = 0;
+
+function selectDevice(i){
+  selectedDevice = i;
+  document.querySelectorAll('.device-card').forEach((c,idx)=>{
+    c.classList.toggle('selected', idx===i);
+  });
+  document.getElementById('dialDisplay').textContent = devices[i].sim;
+  addLog('info', `${devices[i].name} tanlandi`, now());
+}
+
+// ═══════════════════════════════════════════
+//   DIALPAD
+// ═══════════════════════════════════════════
+let dialStr = devices[0].sim;
+let dialEditing = false;
+
+function dialPress(ch){
+  if(!dialEditing){
+    dialStr = '';
+    dialEditing = true;
+  }
+  if(dialStr.length < 16){
+    dialStr += ch;
+    document.getElementById('dialDisplay').textContent = dialStr;
+    // haptic / sound feedback
+    if(navigator.vibrate) navigator.vibrate(12);
+    playTone(ch);
   }
 }
+
+function dialBackspace(){
+  if(dialStr.length > 0){
+    dialStr = dialStr.slice(0,-1);
+    document.getElementById('dialDisplay').textContent = dialStr || '—';
+  }
+}
+
+// ─── DTMF tones (Web Audio API) ───
+const DTMF_FREQS = {
+  '1':[697,1209],'2':[697,1336],'3':[697,1477],
+  '4':[770,1209],'5':[770,1336],'6':[770,1477],
+  '7':[852,1209],'8':[852,1336],'9':[852,1477],
+  '*':[941,1209],'0':[941,1336],'#':[941,1477]
+};
+let audioCtx = null;
+function playTone(key){
+  try{
+    if(!audioCtx) audioCtx = new(window.AudioContext||window.webkitAudioContext)();
+    const freqs = DTMF_FREQS[key];
+    if(!freqs) return;
+    freqs.forEach(f => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.frequency.value = f;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.15);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+    });
+  }catch(e){}
+}
+
+// ═══════════════════════════════════════════
+//   QO'NG'IROQ LOGIKASI
+// ═══════════════════════════════════════════
+/*
+  Qanday ishlaydi:
+  1. "Qo'ng'iroq" tugmasi bosiladi
+  2. Ilova SIM7600 ga AT buyruq yuboradi:
+       ATD+998901234567;
+  3. ESP32 da SIM7600 qo'ng'iroqni qabul qiladi:
+       AT+ANSWER yoki ATA
+  4. Ovozli kanal ochiladi
+  5. Foydalanuvchi DTMF raqam bosadi
+     (masalan: "1" = qulflash)
+  6. ESP32 DTMF tonni eshitadi:
+       AT+DDET=1 (DTMF detection)
+  7. ESP32 buyruqni bajaradi va SMS qaytaradi
+
+  Bu demo versiyada HTTP orqali simulyatsiya qilinadi.
+  Real qurilma bilan: SIM7600 da AT buyruqlar ishlatiladi.
+*/
+
+const ESP32_BASE = 'http://192.168.4.1'; // ESP32 WiFi AP manzili
+// Yoki internet orqali: 'https://autocontrol.uz/api'
+
+let callActive = false;
+let callStartTime = null;
+let callTimerInterval = null;
+let callState = 'idle'; // idle | ringing | connected | ended
+
+function startCall(){
+  const dev = devices[selectedDevice];
+  if(!dev.online){
+    showToast('⚠️ Qurilma offline — SMS orqali urinib ko\'ring', 'error');
+    return;
+  }
+  const num = document.getElementById('dialDisplay').textContent;
+  if(!num || num === '—'){
+    showToast('Raqam kiriting', 'error'); return;
+  }
+
+  callState = 'ringing';
+  callActive = true;
+
+  // UI yangilash
+  document.getElementById('callStartBtn').classList.add('ringing');
+  document.getElementById('callStateCard').classList.add('active');
+  document.getElementById('callStateLabel').textContent = 'Ulanmoqda...';
+  document.getElementById('callStateDevice').textContent = 'ESP32 — ' + dev.name;
+  document.getElementById('callTimer').textContent = '00:00';
+
+  addLog('info', `📞 Qo'ng'iroq: ${dev.name} (${num})`, now());
+  showToast('📞 Ulanmoqda — ' + dev.name, 'info');
+
+  // ── Real SIM7600 AT buyruq ──
+  // ESP32 WiFi orqali:
+  sendESP32Command('call', { number: num })
+    .then(() => {})
+    .catch(() => {});
+
+  // Simulyatsiya: 2.5 sek ringing → connected
+  setTimeout(() => {
+    if(!callActive) return;
+    callState = 'connected';
+    document.getElementById('callStartBtn').style.display = 'none';
+    document.getElementById('callEndBtn').style.display = 'flex';
+    document.getElementById('callStartBtn').classList.remove('ringing');
+    document.getElementById('callStateLabel').textContent = '🟢 Ulandi — gapiring...';
+    document.getElementById('dtmfPanel').style.display = 'block';
+    addLog('success', `✅ Ulandi — ${dev.name}`, now());
+    showToast('✅ Ulandi! DTMF tugmalardan foydalaning', 'success');
+
+    // Timer boshlash
+    callStartTime = Date.now();
+    callTimerInterval = setInterval(updateCallTimer, 1000);
+  }, 2500);
+}
+
+function endCall(){
+  callActive = false;
+  callState = 'ended';
+  clearInterval(callTimerInterval);
+
+  const elapsed = callStartTime ? Math.floor((Date.now()-callStartTime)/1000) : 0;
+  const dur = formatTime(elapsed);
+
+  document.getElementById('callStartBtn').style.display = 'flex';
+  document.getElementById('callEndBtn').style.display = 'none';
+  document.getElementById('callStateCard').classList.remove('active');
+  document.getElementById('dtmfPanel').style.display = 'none';
+
+  addLog('info', `📵 Tugatildi — ${dur} — ${devices[selectedDevice].name}`, now());
+  showToast(`📵 Qo'ng'iroq tugatildi — ${dur}`, 'info');
+
+  // ESP32 ga hang up
+  sendESP32Command('hangup', {}).catch(()=>{});
+
+  callState = 'idle';
+}
+
+function updateCallTimer(){
+  if(!callStartTime) return;
+  const s = Math.floor((Date.now()-callStartTime)/1000);
+  document.getElementById('callTimer').textContent = formatTime(s);
+}
+
+function formatTime(s){
+  const m = Math.floor(s/60);
+  return String(m).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+}
+
+// ═══════════════════════════════════════════
+//   DTMF BUYRUQ YUBORISH
+// ═══════════════════════════════════════════
+/*
+  ESP32 Arduino kodi (SIM7600):
+  Qo'ng'iroq paytida DTMF aniqlash:
+    AT+DDET=1,0,0   ← DTMF detection yoqish
+  DTMF kelganda ESP32 serial da:
+    +DTMF: 1        ← "1" raqami keldi
+  ESP32 buni o'qib buyruq bajaradi.
+*/
+const DTMF_ACTIONS = {
+  '1': '🔒 Qulflash',     '2': '🔓 Ochish',
+  '3': '🔑 Dvigatel yoq', '4': '⛔ Dvigatel o\'ch',
+  '5': '📣 Signal',       '6': '📊 Holat so\'rash',
+  '9': '🚨 Alarm',        '0': '📍 GPS joylashuv'
+};
+
+function sendDTMF(key, action){
+  if(callState !== 'connected'){
+    showToast('Avval qo\'ng\'iroq boshlang', 'error'); return;
+  }
+  playTone(key);
+  if(navigator.vibrate) navigator.vibrate([30,10,30]);
+
+  const label = DTMF_ACTIONS[key] || action;
+  addLog('info', `⌨️ DTMF "${key}" — ${label}`, now());
+  showToast(`⌨️ ${label} buyrug'i yuborildi`, 'success');
+
+  // ESP32 ga HTTP orqali ham yuborish (agar WiFi bo'lsa)
+  sendESP32Command('dtmf', { key, action }).catch(()=>{});
+}
+
+// ═══════════════════════════════════════════
+//   SMS BUYRUQ
+// ═══════════════════════════════════════════
+/*
+  SIM7600 SMS rejimi:
+    AT+CMGF=1                    ← Text mode
+    AT+CMGS="+998901234567"
+    > STATUS                     ← Matn
+    [Ctrl+Z]                     ← Yuborish
+
+  ESP32 SMS ni o'qib buyruq bajaradi:
+    AT+CNMI=2,2,0,0,0            ← SMS kelsa serial ga chiqaradi
+    +CMT: "+998...", ...
+    STATUS                       ← Matn
+*/
+const SMS_COMMANDS = [
+  { cmd:'STATUS',    desc:'Holat so\'rash (SMS javob keladi)' },
+  { cmd:'LOCK',      desc:'Qulflash' },
+  { cmd:'UNLOCK',    desc:'Ochish' },
+  { cmd:'GPS',       desc:'GPS manzil (SMS javob)' },
+  { cmd:'ENGINE ON', desc:'Dvigatel yoqish' },
+  { cmd:'ENGINE OFF',desc:'Dvigatel o\'chirish' },
+  { cmd:'ALARM ON',  desc:'Alarm yoqish' },
+];
+
+function sendSMSCommand(){
+  const dev = devices[selectedDevice];
+  const options = SMS_COMMANDS.map((s,i) => `${i+1}. ${s.cmd} — ${s.desc}`).join('\n');
+
+  // Simple choice via confirm (real app da modal bo'ladi)
+  const choice = prompt(
+    `📨 ${dev.name} ga SMS buyruq yuborish:\n\n` + options +
+    '\n\nRaqam kiriting (1-7):',
+    '1'
+  );
+  if(!choice) return;
+  const idx = parseInt(choice) - 1;
+  if(idx < 0 || idx >= SMS_COMMANDS.length) return;
+
+  const sms = SMS_COMMANDS[idx];
+  addLog('info', `💬 SMS: "${sms.cmd}" → ${dev.name}`, now());
+  showToast(`💬 SMS yuborildi: ${sms.cmd}`, 'success');
+
+  sendESP32Command('sms', { number: dev.sim, text: sms.cmd }).catch(()=>{});
+}
+
+// ═══════════════════════════════════════════
+//   ESP32 HTTP API (WiFi yoki Internet)
+// ═══════════════════════════════════════════
+async function sendESP32Command(action, data){
+  /*
+    ESP32 da WebServer kutib turadi:
+    GET /cmd?action=lock
+    GET /cmd?action=unlock
+    GET /cmd?action=call&number=+99890...
+    GET /cmd?action=dtmf&key=1
+    GET /cmd?action=sms&number=+99890...&text=STATUS
+
+    ESP32 Arduino kodi:
+    server.on("/cmd", [](){
+      String action = server.arg("action");
+      if(action == "lock")   setLock(true);
+      if(action == "unlock") setLock(false);
+      if(action == "call")   simCall(server.arg("number"));
+      if(action == "dtmf")   sendDTMF(server.arg("key")[0]);
+      if(action == "sms")    sendSMS(server.arg("number"), server.arg("text"));
+      server.send(200, "application/json", "{\"ok\":true}");
+    });
+  */
+  const params = new URLSearchParams({ action, ...data });
+  try {
+    const res = await fetch(`${ESP32_BASE}/cmd?${params}`, {
+      signal: AbortSignal.timeout(4000)
+    });
+    return await res.json();
+  } catch(e) {
+    // Demo rejimda xato normal — real qurilma yo'q
+    console.log('ESP32 demo mode:', action, data);
+    return { ok: true, demo: true };
+  }
+}
+
+// ═══════════════════════════════════════════
+//   KIRUVCHI QOINGIROQ (ESP32 dan)
+// ═══════════════════════════════════════════
+/*
+  ESP32 SIM7600 da kiruvchi qo'ng'iroq bo'lganda:
+    +RING yoki RING serial da chiqadi
+  ESP32 bu holda HTTP ga xabar yuboradi:
+    POST https://autocontrol.uz/api/notify
+    { "type": "inbound_call", "device": "Cobalt", "from": "+99890..." }
+  App server orqali (WebSocket/push) ilovaga xabar beradi.
+
+  Bu demo da 15 sek dan so'ng kiruvchi qo'ng'iroq simulyatsiya qilinadi:
+*/
+setTimeout(() => {
+  simulateInbound();
+}, 15000);
+
+function simulateInbound(){
+  if(callActive) return; // qo'ng'iroq bo'lsa ko'rsatma
+  document.getElementById('inboundFrom').textContent = 'ESP32 — GM Cobalt (+998901234567)';
+  document.getElementById('inboundOverlay').classList.add('show');
+  if(navigator.vibrate) navigator.vibrate([400,200,400,200,400]);
+  addLog('info', '📲 Kiruvchi qo\'ng\'iroq: ESP32 — Cobalt', now());
+}
+
+function acceptInbound(){
+  document.getElementById('inboundOverlay').classList.remove('show');
+  callState = 'connected';
+  callActive = true;
+  callStartTime = Date.now();
+  document.getElementById('callStartBtn').style.display = 'none';
+  document.getElementById('callEndBtn').style.display = 'flex';
+  document.getElementById('callStateCard').classList.add('active');
+  document.getElementById('callStateLabel').textContent = '🟢 Ulandi — gapiring...';
+  document.getElementById('callStateDevice').textContent = 'ESP32 — GM Cobalt';
+  document.getElementById('dtmfPanel').style.display = 'block';
+  callTimerInterval = setInterval(updateCallTimer, 1000);
+  addLog('success', '✅ Qo\'ng\'iroq qabul qilindi', now());
+  showToast('✅ Ulandi! DTMF tugmalardan foydalaning', 'success');
+}
+
+function declineInbound(){
+  document.getElementById('inboundOverlay').classList.remove('show');
+  addLog('info', '📵 Qo\'ng\'iroq rad etildi', now());
+  showToast('📵 Qo\'ng\'iroq rad etildi', 'info');
+}
+
+// ═══════════════════════════════════════════
+//   LOG YORDAM FUNKSIYALARI
+// ═══════════════════════════════════════════
+function addLog(type, text, time){
+  const list = document.getElementById('callLog');
+  const item = document.createElement('div');
+  item.className = `call-log-item ${type}`;
+  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  item.innerHTML = `
+    <div class="log-ico">${icons[type]||'•'}</div>
+    <div class="log-text">${text}</div>
+    <div class="log-time">${time}</div>`;
+  list.insertBefore(item, list.firstChild);
+  // Max 20 ta log
+  while(list.children.length > 20) list.removeChild(list.lastChild);
+}
+
+function now(){
+  return new Date().toLocaleTimeString('uz-UZ',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ── SIM holat ko'rsatkichi ──
+setInterval(() => {
+  const dot = document.getElementById('simStatusDot');
+  dot.style.background = Math.random()>0.1 ? 'var(--call-green)' : '#ff8800';
+}, 4000);
 </script>
 </body>
 </html>
