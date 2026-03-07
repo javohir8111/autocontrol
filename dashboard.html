@@ -2,430 +2,951 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>AutoControl Pro — Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#050810; --card:#0d1117; --card2:#111827;
-    --accent:#00d4ff; --accent2:#0066ff; --green:#00ff88;
-    --red:#ff3366; --orange:#ff8800; --yellow:#ffd700;
-    --text:#e2e8f0; --muted:#64748b; --border:rgba(0,212,255,0.12);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Exo 2',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:80px; }
-  .bg-grid {
-    position:fixed; inset:0;
-    background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
-    background-size:40px 40px; pointer-events:none; z-index:0;
-  }
-  .content { position:relative; z-index:1; }
+:root{
+  --bg:#050810;--card:#0a0f1e;--card2:#0d1422;
+  --accent:#00d4ff;--accent2:#0066ff;--green:#00ff88;
+  --red:#ff3366;--orange:#ff8800;--yellow:#ffd700;
+  --gold:#c9a84c;--text:#e2e8f0;--muted:#4a6080;
+  --border:rgba(0,212,255,0.1);--border2:rgba(0,212,255,0.06);
+  --glow:rgba(0,212,255,0.15);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;min-height:100vh;overflow-x:hidden;background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;}
 
-  /* Top Bar */
-  .topbar {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:16px 20px;
-    background:rgba(13,17,23,0.95); backdrop-filter:blur(20px);
-    border-bottom:1px solid var(--border);
-    position:sticky; top:0; z-index:100;
-  }
-  .topbar-logo {
-    font-family:'Orbitron',sans-serif; font-size:16px; font-weight:900;
-    background:linear-gradient(90deg,var(--accent),var(--accent2));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  }
-  .topbar-right { display:flex; align-items:center; gap:14px; }
-  .notif-btn {
-    background:rgba(255,255,255,0.06); border:1px solid var(--border);
-    border-radius:10px; width:38px; height:38px;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer; font-size:16px; transition:all 0.2s; position:relative;
-  }
-  .notif-btn:hover { border-color:var(--accent); }
-  .badge {
-    position:absolute; top:-4px; right:-4px;
-    background:var(--red); color:#fff;
-    border-radius:50%; width:16px; height:16px;
-    font-size:9px; display:flex; align-items:center; justify-content:center;
-    font-weight:700;
-  }
-  .avatar {
-    width:38px; height:38px; border-radius:10px;
-    background:linear-gradient(135deg,var(--accent2),var(--accent));
-    display:flex; align-items:center; justify-content:center;
-    font-size:16px; cursor:pointer;
-  }
+/* ── 3D CANVAS BACKGROUND ── */
+#bg3d{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.overlay-grad{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 90% 60% at 50% 0%,rgba(0,100,255,0.06) 0%,transparent 70%),
+             radial-gradient(ellipse 60% 40% at 80% 80%,rgba(0,212,255,0.04) 0%,transparent 60%),
+             linear-gradient(180deg,rgba(5,8,16,0.3) 0%,rgba(5,8,16,0.85) 100%);}
+.noise-ov{position:fixed;inset:-50%;width:200%;height:200%;z-index:2;pointer-events:none;opacity:.022;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:noiseA .5s steps(1) infinite;}
+@keyframes noiseA{0%{transform:translate(0,0)}25%{transform:translate(-2%,1%)}50%{transform:translate(1%,-2%)}75%{transform:translate(-1%,2%)}100%{transform:translate(2%,-1%)}}
 
-  /* Hero Car Card */
-  .hero-section { padding:20px 20px 0; }
-  .greeting { font-size:13px; color:var(--muted); margin-bottom:4px; }
-  .greeting strong { color:var(--text); }
-  .section-title {
-    font-family:'Orbitron',sans-serif; font-size:16px; font-weight:700;
-    margin-bottom:14px; color:var(--text);
-  }
-  .car-selector {
-    display:flex; gap:10px; overflow-x:auto; padding-bottom:4px;
-    scrollbar-width:none; margin-bottom:16px;
-  }
-  .car-selector::-webkit-scrollbar { display:none; }
-  .car-chip {
-    flex-shrink:0; padding:8px 16px;
-    background:rgba(255,255,255,0.05); border:1px solid var(--border);
-    border-radius:30px; cursor:pointer; font-size:13px; transition:all 0.2s;
-    white-space:nowrap;
-  }
-  .car-chip.active {
-    background:linear-gradient(135deg,var(--accent2),var(--accent));
-    border-color:transparent; color:#fff; font-weight:600;
-  }
+/* ── MAIN CONTENT ── */
+.page{position:relative;z-index:10;padding-bottom:88px;min-height:100vh;}
 
-  .main-car-card {
-    background:linear-gradient(135deg,#0a1628,#0d1f3c);
-    border:1px solid var(--border); border-radius:24px;
-    padding:24px; margin-bottom:16px;
-    position:relative; overflow:hidden;
-  }
-  .main-car-card::before {
-    content:''; position:absolute;
-    top:-40px; right:-40px;
-    width:200px; height:200px; border-radius:50%;
-    background:radial-gradient(circle,rgba(0,102,255,0.2) 0%,transparent 70%);
-  }
-  .car-header {
-    display:flex; justify-content:space-between; align-items:flex-start;
-    margin-bottom:20px;
-  }
-  .car-name { font-family:'Orbitron',sans-serif; font-size:20px; font-weight:700; }
-  .car-sub { font-size:13px; color:var(--muted); margin-top:4px; }
-  .status-pill {
-    padding:6px 14px; border-radius:30px; font-size:12px; font-weight:700;
-    display:flex; align-items:center; gap:6px;
-  }
-  .status-pill.online { background:rgba(0,255,136,0.15); color:var(--green); border:1px solid rgba(0,255,136,0.3); }
-  .status-pill.offline { background:rgba(255,51,102,0.15); color:var(--red); border:1px solid rgba(255,51,102,0.3); }
-  .pulse { width:8px; height:8px; border-radius:50%; background:var(--green); animation:pulse 1.5s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+/* ── TOPBAR ── */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:clamp(14px,3vw,20px) clamp(16px,4vw,24px);
+  background:rgba(5,8,16,0.7);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border2);position:sticky;top:0;z-index:50;
+}
+.tb-left{display:flex;align-items:center;gap:10px;}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:ld 2s ease-in-out infinite;}
+@keyframes ld{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+.logo-name{font-family:'Orbitron',sans-serif;font-size:clamp(11px,2.5vw,14px);font-weight:700;letter-spacing:3px;color:var(--accent);}
+.tb-center{display:flex;align-items:center;gap:8px;font-size:clamp(12px,3vw,14px);font-weight:600;}
+.car-selector{
+  display:flex;align-items:center;gap:6px;padding:6px 14px;
+  border:1px solid var(--border);border-radius:20px;
+  background:rgba(0,212,255,0.05);cursor:pointer;transition:all .25s;
+}
+.car-selector:hover{border-color:var(--accent);background:rgba(0,212,255,0.1);}
+.car-sel-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:ld 1.8s infinite;}
+.tb-right{display:flex;align-items:center;gap:12px;}
+.notif-btn{
+  position:relative;width:38px;height:38px;border-radius:12px;
+  background:rgba(0,212,255,0.06);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;font-size:16px;
+}
+.notif-btn:hover{background:rgba(0,212,255,0.12);border-color:var(--accent);}
+.nbadge{position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:var(--red);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg);}
+.avatar-sm{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--accent2),var(--accent));display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;border:1px solid rgba(0,212,255,0.3);}
 
-  .car-emoji { font-size:72px; text-align:center; margin:10px 0; filter:drop-shadow(0 0 20px rgba(0,212,255,0.3)); }
+/* ── HERO CAR CARD ── */
+.hero-card{
+  margin:clamp(14px,3vw,20px) clamp(16px,4vw,24px) 0;
+  background:linear-gradient(135deg,rgba(0,30,60,0.8),rgba(0,10,30,0.9));
+  border:1px solid rgba(0,212,255,0.18);border-radius:24px;
+  padding:clamp(18px,4vw,28px);overflow:hidden;position:relative;
+}
+.hero-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,212,255,0.5),transparent);
+}
+.hero-card::after{
+  content:'';position:absolute;inset:0;border-radius:24px;
+  background:radial-gradient(ellipse 60% 50% at 70% 50%,rgba(0,212,255,0.04) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+.hero-car-name{font-family:'Orbitron',sans-serif;font-size:clamp(18px,4vw,24px);font-weight:700;}
+.hero-plate{
+  font-size:clamp(11px,2.5vw,13px);color:var(--muted);margin-top:4px;
+  font-family:'Orbitron',sans-serif;letter-spacing:2px;
+}
+.online-badge{
+  display:flex;align-items:center;gap:6px;padding:6px 12px;
+  border-radius:20px;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.25);
+  font-size:12px;font-weight:600;color:var(--green);
+}
+.online-badge .od{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:ld 1.5s infinite;}
 
-  .sensors-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .sensor-item {
-    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06);
-    border-radius:14px; padding:14px;
-  }
-  .sensor-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
-  .sensor-value { font-family:'Orbitron',sans-serif; font-size:20px; font-weight:700; }
-  .sensor-value.hot { color:var(--red); }
-  .sensor-value.warm { color:var(--orange); }
-  .sensor-value.ok { color:var(--green); }
-  .sensor-sub { font-size:11px; color:var(--muted); margin-top:2px; }
+/* 3D Car mini canvas */
+.hero-3d-wrap{
+  height:clamp(120px,25vw,180px);position:relative;margin:8px -8px 16px;
+  border-radius:16px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(0,20,50,0.3) 0%,rgba(0,5,15,0.8) 100%);
+}
+#miniCanvas{width:100%;height:100%;display:block;}
+.hero-3d-overlay{
+  position:absolute;bottom:0;left:0;right:0;height:40%;
+  background:linear-gradient(0deg,rgba(5,8,16,.9) 0%,transparent 100%);
+  pointer-events:none;
+}
 
-  /* Quick Actions */
-  .section { padding:0 20px; margin-bottom:20px; }
-  .quick-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-  .quick-btn {
-    background:var(--card); border:1px solid var(--border);
-    border-radius:16px; padding:14px 8px;
-    display:flex; flex-direction:column; align-items:center; gap:8px;
-    cursor:pointer; transition:all 0.25s; text-decoration:none;
-  }
-  .quick-btn:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,212,255,0.15); }
-  .quick-btn.active-action { border-color:var(--green); background:rgba(0,255,136,0.06); }
-  .quick-btn.danger { border-color:rgba(255,51,102,0.3); }
-  .quick-btn.danger:hover { border-color:var(--red); box-shadow:0 8px 20px rgba(255,51,102,0.15); }
-  .qb-icon { font-size:24px; }
-  .qb-label { font-size:11px; color:var(--muted); text-align:center; font-weight:500; }
+/* Sensor grid */
+.sensor-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
+@media(max-width:380px){.sensor-grid{grid-template-columns:1fr 1fr;}}
+.sensor-card{
+  background:rgba(0,0,0,0.4);border:1px solid var(--border2);border-radius:16px;
+  padding:12px 10px;text-align:center;position:relative;overflow:hidden;
+  transition:all .3s;cursor:default;
+}
+.sensor-card:hover{border-color:var(--border);transform:translateY(-2px);}
+.sensor-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0;
+}
+.sensor-card.temp::before{background:linear-gradient(90deg,var(--red),var(--orange));}
+.sensor-card.cabin::before{background:linear-gradient(90deg,var(--accent2),var(--accent));}
+.sensor-card.batt::before{background:linear-gradient(90deg,var(--green),#00aa55);}
+.sensor-card.fuel::before{background:linear-gradient(90deg,var(--orange),var(--yellow));}
+.sc-icon{font-size:18px;margin-bottom:4px;}
+.sc-val{font-family:'Orbitron',sans-serif;font-size:clamp(14px,3.5vw,18px);font-weight:700;line-height:1;}
+.sc-unit{font-size:10px;color:var(--muted);margin-top:2px;}
+.sc-lbl{font-size:10px;color:var(--muted);margin-top:3px;}
 
-  /* Lock control */
-  .lock-card {
-    background:var(--card); border:1px solid var(--border);
-    border-radius:20px; padding:20px;
-    display:flex; align-items:center; justify-content:space-between;
-  }
-  .lock-info { display:flex; align-items:center; gap:14px; }
-  .lock-icon { font-size:36px; }
-  .lock-text h3 { font-size:15px; font-weight:600; margin-bottom:3px; }
-  .lock-text p { font-size:12px; color:var(--muted); }
-  .toggle-switch {
-    width:56px; height:28px; background:rgba(255,255,255,0.1);
-    border-radius:14px; position:relative; cursor:pointer; transition:background 0.3s;
-    border:none; flex-shrink:0;
-  }
-  .toggle-switch.on { background:var(--green); }
-  .toggle-switch::after {
-    content:''; position:absolute;
-    width:22px; height:22px; border-radius:50%;
-    background:#fff; top:3px; left:3px; transition:transform 0.3s;
-    box-shadow:0 2px 5px rgba(0,0,0,0.3);
-  }
-  .toggle-switch.on::after { transform:translateX(28px); }
+/* Circular progress mini */
+.sensor-ring{position:relative;width:48px;height:48px;margin:0 auto 4px;}
+.sensor-ring svg{transform:rotate(-90deg);}
+.sensor-ring-val{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;
+}
 
-  /* Stats mini */
-  .stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-  .stat-card {
-    background:var(--card); border:1px solid var(--border);
-    border-radius:16px; padding:16px; text-align:center;
-  }
-  .stat-val { font-family:'Orbitron',sans-serif; font-size:22px; font-weight:700; color:var(--accent); }
-  .stat-lbl { font-size:11px; color:var(--muted); margin-top:4px; }
+/* ── QUICK ACTION BUTTONS ── */
+.quick-section{padding:0 clamp(16px,4vw,24px);margin-top:clamp(14px,3vw,20px);}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.section-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+.section-link{font-size:12px;color:var(--accent);cursor:pointer;}
 
-  /* Weather bar */
-  .weather-bar {
-    background:linear-gradient(135deg,#0a1628,#0d1f3c);
-    border:1px solid var(--border); border-radius:20px; padding:16px 20px;
-    display:flex; align-items:center; justify-content:space-between;
-  }
-  .weather-left { display:flex; align-items:center; gap:12px; }
-  .weather-icon { font-size:32px; }
-  .weather-city { font-size:12px; color:var(--muted); }
-  .weather-temp { font-family:'Orbitron',sans-serif; font-size:22px; font-weight:700; }
-  .aqi-pill {
-    padding:6px 14px; border-radius:30px; font-size:12px; font-weight:700;
-  }
-  .aqi-good { background:rgba(0,255,136,0.15); color:var(--green); }
-  .aqi-moderate { background:rgba(255,136,0,0.15); color:var(--orange); }
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.qbtn{
+  position:relative;overflow:hidden;
+  border-radius:18px;padding:clamp(16px,4vw,22px) 16px;
+  border:1px solid var(--border);background:var(--card);
+  cursor:pointer;transition:all .3s;text-align:left;
+  display:flex;flex-direction:column;gap:8px;
+}
+.qbtn::before{
+  content:'';position:absolute;inset:0;border-radius:18px;opacity:0;
+  transition:opacity .3s;
+}
+.qbtn:hover::before{opacity:1;}
+.qbtn:active{transform:scale(0.97);}
 
-  /* Bottom Nav */
-  .bottom-nav {
-    position:fixed; bottom:0; left:0; right:0;
-    background:rgba(13,17,23,0.97); backdrop-filter:blur(20px);
-    border-top:1px solid var(--border);
-    display:flex; padding:8px 0 12px; z-index:100;
-  }
-  .nav-item {
-    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
-    cursor:pointer; text-decoration:none; transition:all 0.2s; padding:6px;
-  }
-  .nav-icon { font-size:22px; }
-  .nav-label { font-size:10px; color:var(--muted); font-weight:500; }
-  .nav-item.active .nav-label { color:var(--accent); }
-  .nav-item.active .nav-icon { filter:drop-shadow(0 0 6px var(--accent)); }
+.qbtn.lock{border-color:rgba(255,51,102,0.2);}
+.qbtn.lock::before{background:radial-gradient(ellipse at 30% 50%,rgba(255,51,102,0.08),transparent);}
+.qbtn.lock:hover{border-color:rgba(255,51,102,0.45);box-shadow:0 8px 32px rgba(255,51,102,0.12);}
 
-  .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-  .see-all { font-size:12px; color:var(--accent); text-decoration:none; }
+.qbtn.engine{border-color:rgba(0,255,136,0.2);}
+.qbtn.engine::before{background:radial-gradient(ellipse at 30% 50%,rgba(0,255,136,0.08),transparent);}
+.qbtn.engine:hover{border-color:rgba(0,255,136,0.45);box-shadow:0 8px 32px rgba(0,255,136,0.12);}
+
+.qbtn.map{border-color:rgba(0,212,255,0.2);}
+.qbtn.map::before{background:radial-gradient(ellipse at 30% 50%,rgba(0,212,255,0.08),transparent);}
+.qbtn.map:hover{border-color:rgba(0,212,255,0.45);box-shadow:0 8px 32px rgba(0,212,255,0.12);}
+
+.qbtn.ac{border-color:rgba(102,0,255,0.2);}
+.qbtn.ac::before{background:radial-gradient(ellipse at 30% 50%,rgba(102,0,255,0.08),transparent);}
+.qbtn.ac:hover{border-color:rgba(102,0,255,0.45);box-shadow:0 8px 32px rgba(102,0,255,0.12);}
+
+.qbtn-icon{
+  width:44px;height:44px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  flex-shrink:0;transition:all .3s;
+}
+.qbtn.lock .qbtn-icon{background:rgba(255,51,102,0.12);border:1px solid rgba(255,51,102,0.2);}
+.qbtn.engine .qbtn-icon{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.2);}
+.qbtn.map .qbtn-icon{background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.2);}
+.qbtn.ac .qbtn-icon{background:rgba(102,0,255,0.1);border:1px solid rgba(102,0,255,0.2);}
+
+.qbtn-label{font-family:'Orbitron',sans-serif;font-size:clamp(11px,2.5vw,13px);font-weight:700;letter-spacing:.5px;}
+.qbtn-sub{font-size:11px;color:var(--muted);}
+.qbtn-state{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:8px;font-size:10px;font-weight:700;
+  margin-top:2px;width:fit-content;transition:all .3s;
+}
+.qbtn-state.on{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.2);}
+.qbtn-state.off{background:rgba(100,120,128,0.1);color:var(--muted);border:1px solid rgba(100,120,128,0.15);}
+.qbtn-state.locked{background:rgba(255,51,102,0.1);color:var(--red);border:1px solid rgba(255,51,102,0.2);}
+.qbtn-state.unlocked{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.2);}
+
+/* Ripple effect */
+.ripple{
+  position:absolute;border-radius:50%;
+  transform:scale(0);animation:rippleA .55s linear;
+  background:rgba(255,255,255,0.08);pointer-events:none;
+}
+@keyframes rippleA{to{transform:scale(4);opacity:0;}}
+
+/* ── LOCK TOGGLE BIG ── */
+.lock-section{padding:0 clamp(16px,4vw,24px);margin-top:clamp(14px,3vw,20px);}
+.lock-card{
+  background:var(--card);border:1px solid var(--border);border-radius:24px;
+  padding:clamp(20px,4vw,28px);display:flex;align-items:center;gap:20px;
+  position:relative;overflow:hidden;transition:all .4s;
+}
+.lock-card.unlocked{border-color:rgba(0,255,136,0.3);background:rgba(0,30,15,0.6);}
+.lock-card.unlocked::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 80% at 20% 50%,rgba(0,255,136,0.06),transparent);}
+.lock-visual{
+  width:clamp(70px,16vw,90px);height:clamp(70px,16vw,90px);border-radius:50%;flex-shrink:0;
+  border:2px solid rgba(255,51,102,0.3);
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,51,102,0.06);position:relative;cursor:pointer;
+  transition:all .5s cubic-bezier(.34,1.56,.64,1);
+}
+.lock-visual.unlocked{border-color:rgba(0,255,136,0.4);background:rgba(0,255,136,0.08);}
+.lock-visual::before{
+  content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:1px solid rgba(255,51,102,0.15);
+  animation:lockRing 3s linear infinite;
+}
+.lock-visual.unlocked::before{border-color:rgba(0,255,136,0.2);}
+@keyframes lockRing{to{transform:rotate(360deg);}}
+.lock-visual::after{
+  content:'';position:absolute;inset:-16px;border-radius:50%;
+  border:1px dashed rgba(255,51,102,0.08);
+  animation:lockRing 6s linear infinite reverse;
+}
+.lock-visual.unlocked::after{border-color:rgba(0,255,136,0.08);}
+.lock-emoji{font-size:clamp(28px,7vw,36px);transition:transform .4s cubic-bezier(.34,1.56,.64,1);}
+.lock-visual:active .lock-emoji{transform:scale(.85);}
+.lock-info{flex:1;}
+.lock-title{font-family:'Orbitron',sans-serif;font-size:clamp(14px,3.5vw,18px);font-weight:700;margin-bottom:4px;}
+.lock-sub{font-size:12px;color:var(--muted);}
+.lock-toggle{
+  position:relative;width:52px;height:28px;border-radius:14px;
+  background:rgba(255,51,102,0.2);border:1px solid rgba(255,51,102,0.3);
+  cursor:pointer;transition:all .4s;flex-shrink:0;
+}
+.lock-toggle.on{background:rgba(0,255,136,0.2);border-color:rgba(0,255,136,0.4);}
+.lock-toggle-knob{
+  position:absolute;top:3px;left:3px;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--red);transition:all .4s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 0 10px rgba(255,51,102,0.5);
+}
+.lock-toggle.on .lock-toggle-knob{left:27px;background:var(--green);box-shadow:0 0 10px rgba(0,255,136,0.5);}
+
+/* ── ENGINE CARD ── */
+.engine-section{padding:0 clamp(16px,4vw,24px);margin-top:clamp(14px,3vw,20px);}
+.engine-card{
+  background:var(--card);border:1px solid var(--border);border-radius:24px;
+  padding:clamp(18px,4vw,24px);position:relative;overflow:hidden;
+}
+.engine-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,255,136,0.3),transparent);}
+.engine-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.engine-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+.engine-indicator{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;}
+.eng-dot{width:9px;height:9px;border-radius:50%;transition:all .4s;}
+.eng-dot.on{background:var(--green);box-shadow:0 0 10px var(--green);animation:ld 1.5s infinite;}
+.eng-dot.off{background:var(--muted);}
+.engine-btns{display:flex;gap:10px;}
+.eng-btn{
+  flex:1;padding:clamp(14px,3.5vw,18px) 12px;border-radius:16px;border:none;
+  font-family:'Orbitron',sans-serif;font-size:clamp(11px,2.5vw,13px);font-weight:700;
+  letter-spacing:1px;cursor:pointer;transition:all .3s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  position:relative;overflow:hidden;
+}
+.eng-btn:active{transform:scale(.97);}
+.eng-btn.start{
+  background:linear-gradient(135deg,rgba(0,200,80,0.15),rgba(0,255,136,0.1));
+  border:1px solid rgba(0,255,136,0.3);color:var(--green);
+}
+.eng-btn.start:hover{background:linear-gradient(135deg,rgba(0,200,80,0.25),rgba(0,255,136,0.18));box-shadow:0 6px 24px rgba(0,255,136,0.15);}
+.eng-btn.start.active-eng{background:linear-gradient(135deg,rgba(0,200,80,0.3),rgba(0,255,136,0.2));box-shadow:0 0 30px rgba(0,255,136,0.2);}
+.eng-btn.stop{
+  background:linear-gradient(135deg,rgba(255,30,80,0.1),rgba(255,51,102,0.08));
+  border:1px solid rgba(255,51,102,0.25);color:var(--red);
+}
+.eng-btn.stop:hover{background:linear-gradient(135deg,rgba(255,30,80,0.2),rgba(255,51,102,0.15));box-shadow:0 6px 24px rgba(255,51,102,0.12);}
+
+/* ── STATS ROW ── */
+.stats-section{padding:0 clamp(16px,4vw,24px);margin-top:clamp(14px,3vw,20px);}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.stat-card{
+  background:var(--card);border:1px solid var(--border2);border-radius:18px;
+  padding:clamp(14px,3.5vw,18px) clamp(12px,3vw,16px);text-align:center;
+  transition:all .3s;
+}
+.stat-card:hover{border-color:var(--border);transform:translateY(-2px);}
+.stat-ico{font-size:22px;margin-bottom:6px;}
+.stat-val{font-family:'Orbitron',sans-serif;font-size:clamp(16px,4vw,22px);font-weight:700;color:var(--accent);}
+.stat-unit{font-size:10px;color:var(--muted);display:inline;}
+.stat-lbl{font-size:10px;color:var(--muted);margin-top:4px;}
+
+/* ── WEATHER ── */
+.weather-section{padding:0 clamp(16px,4vw,24px);margin-top:clamp(14px,3vw,20px);}
+.weather-card{
+  background:linear-gradient(135deg,rgba(0,20,60,0.7),rgba(0,10,30,0.9));
+  border:1px solid var(--border);border-radius:20px;
+  padding:clamp(16px,4vw,22px);display:flex;align-items:center;justify-content:space-between;
+}
+.weather-left{display:flex;align-items:center;gap:14px;}
+.weather-icon{font-size:clamp(36px,8vw,44px);}
+.weather-info{}
+.weather-temp{font-family:'Orbitron',sans-serif;font-size:clamp(24px,6vw,32px);font-weight:700;color:var(--text);}
+.weather-city{font-size:12px;color:var(--muted);margin-top:2px;}
+.weather-right{text-align:right;}
+.aqi-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:12px;
+  background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.25);
+  font-size:12px;font-weight:700;color:var(--yellow);
+}
+.weather-details{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.6;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:rgba(5,8,16,0.96);backdrop-filter:blur(24px);
+  border-top:1px solid var(--border2);
+  display:flex;padding:8px 0 clamp(10px,3vw,14px);
+}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;text-decoration:none;padding:6px;transition:all .2s;}
+.nav-icon{font-size:22px;transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+.nav-item.active .nav-icon{transform:scale(1.15);}
+.nav-label{font-size:10px;color:var(--muted);font-weight:500;transition:color .2s;}
+.nav-item.active .nav-label{color:var(--accent);}
+.nav-item:active .nav-icon{transform:scale(.9);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(16px);z-index:9999;
+  background:rgba(10,15,30,0.97);border:1px solid var(--accent);border-radius:16px;
+  padding:11px 20px;font-size:13px;font-weight:600;color:var(--accent);
+  white-space:nowrap;pointer-events:none;opacity:0;transition:all .35s;backdrop-filter:blur(16px);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.green{border-color:var(--green);color:var(--green);}
+.toast.red{border-color:var(--red);color:var(--red);}
+.toast.orange{border-color:var(--orange);color:var(--orange);}
+
+/* ── LOADING SHIMMER ── */
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.shimmer{background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,0.04) 50%,rgba(255,255,255,0) 100%);background-size:200% 100%;animation:shimmer 2.5s infinite;}
+
+/* ── PAGE ENTRY ANIMATIONS ── */
+.hero-card{animation:entryFade .6s .1s both;}
+.quick-section{animation:entryFade .6s .25s both;}
+.lock-section{animation:entryFade .6s .35s both;}
+.engine-section{animation:entryFade .6s .45s both;}
+.stats-section{animation:entryFade .6s .55s both;}
+.weather-section{animation:entryFade .6s .65s both;}
+@keyframes entryFade{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* Glow pulse on active states */
+@keyframes glowPulse{0%,100%{box-shadow:0 0 20px rgba(0,255,136,0.15);}50%{box-shadow:0 0 40px rgba(0,255,136,0.3);}}
+.engine-active{animation:glowPulse 2s infinite;}
 </style>
 </head>
 <body>
-<div class="bg-grid"></div>
-<div class="content">
 
-  <!-- Top Bar -->
-  <div class="topbar">
-    <div class="topbar-logo">⚡ AUTOCONTROL</div>
-    <div class="topbar-right">
-      <div class="notif-btn" onclick="window.location.href='notifications.html'">
-        🔔<div class="badge">3</div>
-      </div>
-      <div class="avatar" onclick="window.location.href='profile.html'">👤</div>
+<!-- 3D Background -->
+<canvas id="bg3d"></canvas>
+<div class="overlay-grad"></div>
+<div class="noise-ov"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<div class="page">
+
+<!-- ── TOPBAR ── -->
+<div class="topbar">
+  <div class="tb-left">
+    <div class="logo-dot"></div>
+    <div class="logo-name">AUTOCONTROL</div>
+  </div>
+  <div class="tb-center">
+    <div class="car-selector" onclick="location.href='profile.html'">
+      <div class="car-sel-dot"></div>
+      <span style="font-size:13px;font-weight:600;">GM Cobalt</span>
+      <span style="color:var(--muted);font-size:12px;">▾</span>
     </div>
   </div>
-
-  <!-- Hero -->
-  <div class="hero-section">
-    <p class="greeting">Xush kelibsiz, <strong id="userName">Foydalanuvchi</strong> 👋</p>
-
-    <div class="car-selector" id="carSelector">
-      <div class="car-chip active">🚗 Cobalt 01</div>
-      <div class="car-chip">🚙 Nexia 3</div>
-      <div class="car-chip">➕ Qo'shish</div>
+  <div class="tb-right">
+    <div class="notif-btn" onclick="location.href='notifications.html'">
+      🔔<div class="nbadge">3</div>
     </div>
+    <div class="avatar-sm" onclick="location.href='profile.html'">👤</div>
+  </div>
+</div>
 
-    <div class="main-car-card">
-      <div class="car-header">
-        <div>
-          <div class="car-name">GM Cobalt</div>
-          <div class="car-sub">01 A 777 AA • 2021</div>
-        </div>
-        <div class="status-pill online">
-          <div class="pulse"></div> Online
-        </div>
-      </div>
-
-      <div class="car-emoji">🚗</div>
-
-      <div class="sensors-grid">
-        <div class="sensor-item">
-          <div class="sensor-label">🌡️ Motor harorati</div>
-          <div class="sensor-value warm" id="engineTemp">87°C</div>
-          <div class="sensor-sub">Normal holat</div>
-        </div>
-        <div class="sensor-item">
-          <div class="sensor-label">❄️ Salon harorati</div>
-          <div class="sensor-value ok" id="cabinTemp">22°C</div>
-          <div class="sensor-sub">Qulay</div>
-        </div>
-        <div class="sensor-item">
-          <div class="sensor-label">🔋 Akkumulyator</div>
-          <div class="sensor-value ok" id="batteryVal">94%</div>
-          <div class="sensor-sub">12.6V</div>
-        </div>
-        <div class="sensor-item">
-          <div class="sensor-label">⛽ Yoqilg'i</div>
-          <div class="sensor-value ok" id="fuelVal">68%</div>
-          <div class="sensor-sub">AI-92 • ~340km</div>
-        </div>
-      </div>
+<!-- ── HERO CARD ── -->
+<div class="hero-card">
+  <div class="hero-top">
+    <div>
+      <div class="hero-car-name">GM Cobalt</div>
+      <div class="hero-plate">01 A 777 AA · 2021</div>
     </div>
+    <div class="online-badge"><div class="od"></div>Online</div>
   </div>
 
-  <!-- Quick Actions -->
-  <div class="section">
-    <div class="section-title">Tezkor boshqaruv</div>
-    <div class="quick-grid">
-      <a class="quick-btn" href="car-control.html">
-        <span class="qb-icon">🎮</span>
-        <span class="qb-label">Boshqaruv</span>
-      </a>
-      <a class="quick-btn" href="map.html">
-        <span class="qb-icon">📍</span>
-        <span class="qb-label">Joylashuv</span>
-      </a>
-      <a class="quick-btn" href="statistics.html">
-        <span class="qb-icon">📊</span>
-        <span class="qb-label">Statistika</span>
-      </a>
-      <a class="quick-btn" href="fuel-log.html">
-        <span class="qb-icon">⛽</span>
-        <span class="qb-label">Yoqilg'i</span>
-      </a>
-    </div>
+  <!-- Mini 3D car -->
+  <div class="hero-3d-wrap">
+    <canvas id="miniCanvas"></canvas>
+    <div class="hero-3d-overlay"></div>
   </div>
 
-  <!-- Lock -->
-  <div class="section">
-    <div class="lock-card">
-      <div class="lock-info">
-        <div class="lock-icon" id="lockIcon">🔒</div>
-        <div class="lock-text">
-          <h3 id="lockTitle">Mashina qulflangan</h3>
-          <p id="lockSub">Bosing — qulfni oching</p>
-        </div>
+  <!-- Sensor grid -->
+  <div class="sensor-grid">
+    <div class="sensor-card temp">
+      <div class="sc-icon">🌡️</div>
+      <div class="sc-val" id="sTemp">87</div>
+      <div class="sc-unit">°C</div>
+      <div class="sc-lbl">Motor</div>
+    </div>
+    <div class="sensor-card cabin">
+      <div class="sc-icon">❄️</div>
+      <div class="sc-val" id="sCabin">22</div>
+      <div class="sc-unit">°C</div>
+      <div class="sc-lbl">Salon</div>
+    </div>
+    <div class="sensor-card batt">
+      <div class="sensor-ring">
+        <svg width="48" height="48" viewBox="0 0 48 48">
+          <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(0,255,136,0.12)" stroke-width="4"/>
+          <circle cx="24" cy="24" r="18" fill="none" stroke="var(--green)" stroke-width="4"
+            stroke-dasharray="113" id="battArc" stroke-dashoffset="11"
+            stroke-linecap="round"/>
+        </svg>
+        <div class="sensor-ring-val" style="color:var(--green)" id="sBatt">94%</div>
       </div>
-      <button class="toggle-switch" id="lockToggle" onclick="toggleLock()"></button>
+      <div class="sc-lbl">Batter.</div>
+    </div>
+    <div class="sensor-card fuel">
+      <div class="sensor-ring">
+        <svg width="48" height="48" viewBox="0 0 48 48">
+          <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(255,136,0,0.12)" stroke-width="4"/>
+          <circle cx="24" cy="24" r="18" fill="none" stroke="var(--orange)" stroke-width="4"
+            stroke-dasharray="113" id="fuelArc" stroke-dashoffset="35"
+            stroke-linecap="round"/>
+        </svg>
+        <div class="sensor-ring-val" style="color:var(--orange)" id="sFuel">68%</div>
+      </div>
+      <div class="sc-lbl">Yoqilg'i</div>
     </div>
   </div>
+</div>
 
-  <!-- Engine control -->
-  <div class="section">
-    <div class="section-title">Dvigatel</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <button class="quick-btn" style="flex-direction:row;justify-content:center;gap:10px;padding:16px;" onclick="startEngine()">
-        <span style="font-size:22px;">🔑</span>
-        <span style="color:var(--green);font-weight:600;font-size:14px;">Yoqish</span>
-      </button>
-      <button class="quick-btn danger" style="flex-direction:row;justify-content:center;gap:10px;padding:16px;" onclick="stopEngine()">
-        <span style="font-size:22px;">⏹️</span>
-        <span style="color:var(--red);font-weight:600;font-size:14px;">O'chirish</span>
-      </button>
-    </div>
-    <div id="engineStatus" style="text-align:center;margin-top:10px;font-size:13px;color:var(--muted);"></div>
+<!-- ── QUICK ACTIONS ── -->
+<div class="quick-section">
+  <div class="section-hdr">
+    <div class="section-title">Tez amallar</div>
+    <div class="section-link" onclick="location.href='car-control.html'">Hammasi →</div>
   </div>
-
-  <!-- Stats -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-title" style="margin:0;">Bugungi statistika</div>
-      <a href="statistics.html" class="see-all">Barchasi →</a>
-    </div>
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-val">124</div>
-        <div class="stat-lbl">km bugun</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" style="color:var(--orange);">8.2</div>
-        <div class="stat-lbl">L/100km</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" style="color:var(--green);">3h</div>
-        <div class="stat-lbl">Yurish vaqti</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Weather -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-title" style="margin:0;">Toshkent havosi</div>
-      <a href="weather-air.html" class="see-all">Batafsil →</a>
-    </div>
-    <div class="weather-bar">
-      <div class="weather-left">
-        <div class="weather-icon">🌤️</div>
-        <div>
-          <div class="weather-city">Toshkent, O'zbekiston</div>
-          <div class="weather-temp">+18°C</div>
-        </div>
-      </div>
+  <div class="quick-grid">
+    <div class="qbtn lock" onclick="toggleLockQ(this)" id="qLock">
+      <div class="qbtn-icon">🔒</div>
       <div>
-        <div class="aqi-pill aqi-moderate">AQI: 78 😐</div>
-        <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;">O'rtacha</div>
+        <div class="qbtn-label">Qulf</div>
+        <div class="qbtn-sub">Eshik holati</div>
+        <div class="qbtn-state locked" id="qLockState">● Qulflangan</div>
+      </div>
+    </div>
+    <div class="qbtn engine" onclick="toggleEngineQ(this)" id="qEngine">
+      <div class="qbtn-icon">🔑</div>
+      <div>
+        <div class="qbtn-label">Dvigatel</div>
+        <div class="qbtn-sub">Motor holati</div>
+        <div class="qbtn-state off" id="qEngState">○ O'chiq</div>
+      </div>
+    </div>
+    <div class="qbtn map" onclick="location.href='map.html'">
+      <div class="qbtn-icon">📍</div>
+      <div>
+        <div class="qbtn-label">Joylashuv</div>
+        <div class="qbtn-sub">Xaritada ko'rish</div>
+        <div class="qbtn-state on" style="color:var(--accent);border-color:rgba(0,212,255,0.2);background:rgba(0,212,255,0.08);">● Jonli</div>
+      </div>
+    </div>
+    <div class="qbtn ac" onclick="toggleAcQ(this)" id="qAc">
+      <div class="qbtn-icon">❄️</div>
+      <div>
+        <div class="qbtn-label">Konditsion.</div>
+        <div class="qbtn-sub">Harorat: 22°C</div>
+        <div class="qbtn-state off" id="qAcState">○ O'chiq</div>
       </div>
     </div>
   </div>
-
 </div>
 
-<!-- Bottom Nav -->
+<!-- ── LOCK CARD ── -->
+<div class="lock-section">
+  <div class="section-hdr"><div class="section-title">Qulf boshqaruvi</div></div>
+  <div class="lock-card" id="lockCard">
+    <div class="lock-visual" id="lockVisual" onclick="masterToggleLock()">
+      <div class="lock-emoji" id="lockEmoji">🔒</div>
+    </div>
+    <div class="lock-info">
+      <div class="lock-title" id="lockTitle">Qulflangan</div>
+      <div class="lock-sub" id="lockSub">Barcha eshiklar yopiq · 08:32 da</div>
+    </div>
+    <div class="lock-toggle" id="lockToggle" onclick="masterToggleLock()">
+      <div class="lock-toggle-knob"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ENGINE CARD ── -->
+<div class="engine-section">
+  <div class="engine-card" id="engineCard">
+    <div class="engine-top">
+      <div class="engine-title">Dvigatel</div>
+      <div class="engine-indicator">
+        <div class="eng-dot off" id="engDot"></div>
+        <span id="engStatus" style="color:var(--muted)">O'chiq</span>
+      </div>
+    </div>
+    <div class="engine-btns">
+      <div class="eng-btn start" id="engStart" onclick="engineStart()">🔑 Yoqish</div>
+      <div class="eng-btn stop" id="engStop" onclick="engineStop()">⛔ O'chirish</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TODAY STATS ── -->
+<div class="stats-section">
+  <div class="section-hdr">
+    <div class="section-title">Bugungi statistika</div>
+    <div class="section-link" onclick="location.href='statistics.html'">Barchasi →</div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-ico">🛣️</div>
+      <div class="stat-val" id="statKm">124 <span class="stat-unit">km</span></div>
+      <div class="stat-lbl">Bosib o'tildi</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico">⛽</div>
+      <div class="stat-val" id="statFuel">8.2 <span class="stat-unit">L/100</span></div>
+      <div class="stat-lbl">Sarf</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico">⏱️</div>
+      <div class="stat-val" id="statTime">3 <span class="stat-unit">soat</span></div>
+      <div class="stat-lbl">Yo'lda</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── WEATHER ── -->
+<div class="weather-section" style="margin-bottom:clamp(14px,3vw,20px);">
+  <div class="section-hdr"><div class="section-title">Ob-havo · Havo sifati</div><div class="section-link" onclick="location.href='weather-air.html'">→</div></div>
+  <div class="weather-card">
+    <div class="weather-left">
+      <div class="weather-icon">⛅</div>
+      <div class="weather-info">
+        <div class="weather-temp">+18°C</div>
+        <div class="weather-city">Toshkent · O'zgaruvchan</div>
+      </div>
+    </div>
+    <div class="weather-right">
+      <div class="aqi-badge">AQI 78 😐</div>
+      <div class="weather-details">💧 Namlik: 58%<br>💨 Shamol: 12 km/s</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<!-- ── BOTTOM NAV ── -->
 <div class="bottom-nav">
-  <a class="nav-item active" href="dashboard.html">
-    <span class="nav-icon">🏠</span><span class="nav-label">Asosiy</span>
-  </a>
-  <a class="nav-item" href="car-control.html">
-    <span class="nav-icon">🎮</span><span class="nav-label">Boshqaruv</span>
-  </a>
-  <a class="nav-item" href="map.html">
-    <span class="nav-icon">🗺️</span><span class="nav-label">Xarita</span>
-  </a>
-  <a class="nav-item" href="statistics.html">
-    <span class="nav-icon">📊</span><span class="nav-label">Statistika</span>
-  </a>
-  <a class="nav-item" href="profile.html">
-    <span class="nav-icon">👤</span><span class="nav-label">Profil</span>
-  </a>
+  <a class="nav-item active" href="dashboard.html"><span class="nav-icon">🏠</span><span class="nav-label">Asosiy</span></a>
+  <a class="nav-item" href="car-control.html"><span class="nav-icon">🎮</span><span class="nav-label">Boshqaruv</span></a>
+  <a class="nav-item" href="map.html"><span class="nav-icon">🗺️</span><span class="nav-label">Xarita</span></a>
+  <a class="nav-item" href="statistics.html"><span class="nav-icon">📊</span><span class="nav-label">Statistika</span></a>
+  <a class="nav-item" href="profile.html"><span class="nav-icon">👤</span><span class="nav-label">Profil</span></a>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// User name
-const user = JSON.parse(localStorage.getItem('autocontrol_user') || '{}');
-if(user.name) document.getElementById('userName').textContent = user.name;
+// ════════════════════════════════════════
+//   3D BACKGROUND SCENE
+// ════════════════════════════════════════
+(function initBG(){
+  const c=document.getElementById('bg3d');
+  const W=()=>window.innerWidth, H=()=>window.innerHeight;
+  const r=new THREE.WebGLRenderer({canvas:c,antialias:false,alpha:true});
+  r.setPixelRatio(Math.min(devicePixelRatio,1.5));
+  r.setSize(W(),H());
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(50,W()/H(),.1,200);
+  cam.position.set(0,0,14);
 
-// Lock toggle
-let locked = true;
-function toggleLock() {
-  locked = !locked;
-  const t = document.getElementById('lockToggle');
-  const i = document.getElementById('lockIcon');
-  const ti = document.getElementById('lockTitle');
-  const sub = document.getElementById('lockSub');
-  t.classList.toggle('on', !locked);
-  i.textContent = locked ? '🔒' : '🔓';
-  ti.textContent = locked ? 'Mashina qulflangan' : 'Mashina ochiq';
-  sub.textContent = locked ? 'Bosing — qulfni oching' : 'Bosing — qulflang';
+  // Floating particles
+  const geo=new THREE.BufferGeometry();
+  const N=300, pos=new Float32Array(N*3);
+  for(let i=0;i<N;i++){
+    pos[i*3]=(Math.random()-.5)*30;
+    pos[i*3+1]=(Math.random()-.5)*20;
+    pos[i*3+2]=(Math.random()-.5)*18;
+  }
+  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  const pts=new THREE.Points(geo,new THREE.PointsMaterial({color:0x00d4ff,size:.06,transparent:true,opacity:.35,sizeAttenuation:true}));
+  scene.add(pts);
+
+  // Grid plane
+  const grid=new THREE.GridHelper(50,50,0x00d4ff,0x001828);
+  grid.position.y=-6;grid.material.opacity=.1;grid.material.transparent=true;
+  scene.add(grid);
+
+  // Floating rings
+  const rings=[];
+  for(let i=0;i<5;i++){
+    const rg=new THREE.Mesh(
+      new THREE.TorusGeometry(2+i*1.5,.015,6,80),
+      new THREE.MeshBasicMaterial({color:0x00d4ff,transparent:true,opacity:.035-i*.005})
+    );
+    rg.rotation.x=Math.PI/2+i*.2;
+    rg.position.y=-1;
+    scene.add(rg);rings.push(rg);
+  }
+
+  // Accent light orbs
+  const orbs=[];
+  const oc=[0x00d4ff,0x0066ff,0x00ff88];
+  oc.forEach((col,i)=>{
+    const o=new THREE.Mesh(
+      new THREE.SphereGeometry(.12,8,8),
+      new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.7})
+    );
+    o.position.set((i-1)*5,0,2);
+    scene.add(o);orbs.push(o);
+  });
+
+  let mx=0,my=0;
+  window.addEventListener('mousemove',e=>{mx=(e.clientX/W()-.5)*2;my=(e.clientY/H()-.5)*2;},{passive:true});
+  window.addEventListener('touchmove',e=>{mx=(e.touches[0].clientX/W()-.5)*2;my=(e.touches[0].clientY/H()-.5)*2;},{passive:true});
+
+  const clk=new THREE.Clock();
+  (function animBG(){
+    requestAnimationFrame(animBG);
+    const t=clk.getElapsedTime();
+    pts.rotation.y+=.0012;pts.rotation.x+=.0004;
+    rings.forEach((rg,i)=>{rg.rotation.z+=.003*(i%2?1:-1);});
+    orbs.forEach((o,i)=>{o.position.y=Math.sin(t*.7+i*2)*1.5;o.position.z=2+Math.cos(t*.5+i)*1.5;});
+    grid.position.z=(t*.4)%1;
+    cam.position.x+=(-mx*.8-cam.position.x)*.03;
+    cam.position.y+=(my*.5-cam.position.y)*.03;
+    cam.lookAt(0,0,0);
+    r.render(scene,cam);
+  })();
+  window.addEventListener('resize',()=>{cam.aspect=W()/H();cam.updateProjectionMatrix();r.setSize(W(),H());});
+})();
+
+// ════════════════════════════════════════
+//   MINI 3D CAR
+// ════════════════════════════════════════
+(function initMiniCar(){
+  const c=document.getElementById('miniCanvas');
+  const W=()=>c.clientWidth, H=()=>c.clientHeight;
+  const r=new THREE.WebGLRenderer({canvas:c,antialias:true,alpha:true});
+  r.setPixelRatio(Math.min(devicePixelRatio,2));
+  r.setSize(W(),H());
+  r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.2;
+  r.shadowMap.enabled=true;
+
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(38,W()/H(),.1,100);
+  cam.position.set(2.5,1.6,5.5);cam.lookAt(0,.2,0);
+
+  // Lights
+  scene.add(new THREE.AmbientLight(0x0a0c18,1.5));
+  const kL=new THREE.DirectionalLight(0xfff8ee,4);kL.position.set(5,8,4);kL.castShadow=true;scene.add(kL);
+  const fL=new THREE.DirectionalLight(0x1a3060,2);fL.position.set(-6,3,-4);scene.add(fL);
+  const uL=new THREE.PointLight(0x0066ff,8,6);uL.position.set(0,-1.1,0);scene.add(uL);
+  const rL=new THREE.DirectionalLight(0x00d4ff,3);rL.position.set(-3,2,-7);scene.add(rL);
+
+  // Materials
+  const mBody=new THREE.MeshPhysicalMaterial({color:0x060a12,metalness:.98,roughness:.04,clearcoat:1,clearcoatRoughness:.04,envMapIntensity:2});
+  const mGold=new THREE.MeshPhysicalMaterial({color:0xc9a84c,metalness:1,roughness:.08,clearcoat:.5});
+  const mGlass=new THREE.MeshPhysicalMaterial({color:0x102040,metalness:.05,roughness:0,transparent:true,opacity:.3,side:THREE.DoubleSide});
+  const mRubber=new THREE.MeshStandardMaterial({color:0x080808,metalness:.1,roughness:.95});
+  const mRim=new THREE.MeshPhysicalMaterial({color:0xc9a84c,metalness:1,roughness:.05,clearcoat:.8});
+  const mLight=new THREE.MeshStandardMaterial({color:0xfff8ee,emissive:0xfff8ee,emissiveIntensity:4});
+  const mRed=new THREE.MeshStandardMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:5});
+  const mDRL=new THREE.MeshStandardMaterial({color:0xfff5bb,emissive:0xfff5bb,emissiveIntensity:5});
+  const mChrome=new THREE.MeshPhysicalMaterial({color:0xd5dde5,metalness:1,roughness:.03,clearcoat:1});
+
+  const car=new THREE.Group(); scene.add(car);
+  function bx(w,h,d,mat,px,py,pz){
+    const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+    m.position.set(px,py,pz);m.castShadow=true;m.receiveShadow=true;return m;
+  }
+
+  // Body
+  car.add(bx(4.7,.3,2.06,new THREE.MeshStandardMaterial({color:0x050810,roughness:.9}),0,-.18,0));
+  car.add(bx(4.5,.58,2.1,mBody,0,.26,0));
+  car.add(bx(2.4,.62,2.0,mBody,-.08,.76,0));
+  car.add(bx(2.2,.14,2.0,mBody,.76,.56,0));
+  car.add(bx(.5,.2,2.0,mBody,1.84,.52,0));
+  car.add(bx(1.8,.12,2.0,mBody,-1.55,.57,0));
+  car.add(bx(.4,.18,2.0,mBody,-2.18,.52,0));
+  car.add(bx(2.56,.055,2.02,mBody,-.07,1.08,0));
+  // Gold trim
+  car.add(bx(4.5,.022,.05,mGold,0,.54,1.04));
+  car.add(bx(4.5,.022,.05,mGold,0,.54,-1.04));
+  car.add(bx(2.55,.016,.04,mGold,-.07,1.1,.99));
+  car.add(bx(2.55,.016,.04,mGold,-.07,1.1,-.99));
+  // Windshields
+  car.add(bx(.07,.7,1.9,mGlass,.93,.74,0));
+  car.add(bx(.07,.6,1.86,mGlass,-.84,.72,0));
+  // Front/rear
+  car.add(bx(.18,.52,2.08,new THREE.MeshStandardMaterial({color:0x080e1a,roughness:.2}),2.38,.24,0));
+  car.add(bx(.18,.5,2.08,new THREE.MeshStandardMaterial({color:0x080e1a,roughness:.2}),-2.38,.24,0));
+  // DRL
+  car.add(bx(.055,.036,1.38,mDRL,2.3,.26,0));
+  // HL
+  car.add(bx(.055,.2,.7,mGlass,2.26,.14,.72));
+  car.add(bx(.055,.2,.7,mGlass,2.26,.14,-.72));
+  const proj=new THREE.Mesh(new THREE.CylinderGeometry(.07,.09,.14,16),mLight);
+  proj.rotation.z=Math.PI/2;proj.position.set(2.32,.14,.72);car.add(proj);
+  const proj2=proj.clone();proj2.position.z=-.72;car.add(proj2);
+  // Tailights
+  car.add(bx(.055,.18,.68,mRed,-2.27,.14,.72));
+  car.add(bx(.055,.18,.68,mRed,-2.27,.14,-.72));
+  car.add(bx(.05,.036,1.5,mRed,-2.3,.27,0));
+  // Grille
+  car.add(bx(.1,.46,1.1,mGold,2.44,.09,0));
+  // Chrome bumper
+  car.add(bx(.26,.04,1.58,mChrome,2.24,-.11,0));
+  car.add(bx(.26,.04,1.5,mChrome,-2.24,-.1,0));
+
+  // Wheels
+  const wheels=[];
+  [[1.42,1.06],[1.42,-1.06],[-1.42,1.06],[-1.42,-1.06]].forEach(([x,z])=>{
+    const g=new THREE.Group();
+    const tire=new THREE.Mesh(new THREE.CylinderGeometry(.43,.43,.3,32),mRubber);tire.rotation.z=Math.PI/2;g.add(tire);
+    const rimD=new THREE.Mesh(new THREE.CylinderGeometry(.36,.38,.31,32),new THREE.MeshStandardMaterial({color:0x111118,metalness:.5,roughness:.3}));rimD.rotation.z=Math.PI/2;g.add(rimD);
+    new THREE.Mesh(new THREE.TorusGeometry(.365,.015,10,36),mRim).rotation.y=Math.PI/2&&g.add((()=>{const t=new THREE.Mesh(new THREE.TorusGeometry(.365,.015,10,36),mRim);t.rotation.y=Math.PI/2;return t;})());
+    for(let i=0;i<5;i++){const a=i/5*Math.PI*2,s=new THREE.Mesh(new THREE.BoxGeometry(.28,.05,.03),mRim);s.position.set(0,.18*Math.cos(a),.18*Math.sin(a));s.rotation.x=a;g.add(s);}
+    const cap=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.32,16),mGold);cap.rotation.z=Math.PI/2;g.add(cap);
+    g.position.set(x,-.38,z);car.add(g);wheels.push(g);
+  });
+
+  // Ground
+  const fl=new THREE.Mesh(new THREE.PlaneGeometry(40,40),new THREE.MeshPhysicalMaterial({color:0x020408,metalness:.9,roughness:.05,clearcoat:1}));
+  fl.rotation.x=-Math.PI/2;fl.position.y=-.83;fl.receiveShadow=true;scene.add(fl);
+  const gr=new THREE.GridHelper(30,30,0x00d4ff,0x050a18);gr.position.y=-.82;gr.material.opacity=.08;gr.material.transparent=true;scene.add(gr);
+
+  // Particles
+  const pG=new THREE.BufferGeometry();const PC=200;const pP=new Float32Array(PC*3);
+  for(let i=0;i<PC;i++){pP[i*3]=(Math.random()-.5)*12;pP[i*3+1]=Math.random()*5-1;pP[i*3+2]=(Math.random()-.5)*12;}
+  pG.setAttribute('position',new THREE.BufferAttribute(pP,3));
+  const miniPts=new THREE.Points(pG,new THREE.PointsMaterial({color:0x00d4ff,size:.04,transparent:true,opacity:.3,sizeAttenuation:true}));
+  scene.add(miniPts);
+
+  // Undercar glow
+  const ugL=new THREE.PointLight(0x0066ff,10,6);ugL.position.set(0,-1.05,0);scene.add(ugL);
+
+  const clk=new THREE.Clock();
+  let mx2=0,my2=0,tx=0,ty=0,introT=0;
+  window.addEventListener('mousemove',e=>{mx2=(e.clientX/window.innerWidth-.5)*2;my2=(e.clientY/window.innerHeight-.5)*2;},{passive:true});
+
+  (function animMini(){
+    requestAnimationFrame(animMini);
+    const dt=Math.min(clk.getDelta(),.05),t=clk.getElapsedTime();
+    tx+=(mx2*.18-tx)*.04;ty+=(my2*.06-ty)*.04;
+    if(introT<1){introT=Math.min(1,introT+dt*.5);const e4=1-Math.pow(1-introT,4);car.position.x=8*(1-e4);car.rotation.y=-1.5*(1-e4);}
+    if(introT>=1){car.rotation.y+=(-.1+tx-car.rotation.y)*.03;car.rotation.x+=(ty-car.rotation.x)*.02;}
+    car.position.y+=Math.sin(t*.6)*.0006;
+    wheels.forEach(w=>{w.children[0].rotation.x+=dt*.5;});
+    ugL.intensity=8+Math.sin(t*2)*4;ugL.color.setHSL(.58+Math.sin(t*.4)*.04,.9,.5);
+    for(let i=1;i<PC;i+=3){pP[i*3+1]+=dt*.06;if(pP[i*3+1]>4)pP[i*3+1]=-1;}
+    pG.attributes.position.needsUpdate=true;
+    gr.position.z=(t*.4)%1;
+    cam.position.x=2.5+tx*.2+Math.sin(t*.1)*.1;cam.lookAt(0,.2,0);
+    r.render(scene,cam);
+  })();
+
+  const ro=new ResizeObserver(()=>{r.setSize(c.clientWidth,c.clientHeight);cam.aspect=c.clientWidth/c.clientHeight;cam.updateProjectionMatrix();});
+  ro.observe(c);
+})();
+
+// ════════════════════════════════════════
+//   RIPPLE EFFECT
+// ════════════════════════════════════════
+document.querySelectorAll('.qbtn,.eng-btn,.lock-visual').forEach(el=>{
+  el.addEventListener('click',function(e){
+    const r=document.createElement('span');
+    r.className='ripple';
+    const rect=this.getBoundingClientRect();
+    const size=Math.max(rect.width,rect.height)*2;
+    r.style.cssText=`width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px;`;
+    this.appendChild(r);
+    setTimeout(()=>r.remove(),600);
+  });
+});
+
+// ════════════════════════════════════════
+//   STATE
+// ════════════════════════════════════════
+let locked=true, engineOn=false, acOn=false;
+
+function toast(msg,type='',dur=2600){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show '+type;
+  clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',dur);
 }
 
-// Engine
-let engineOn = false;
-function startEngine() {
-  engineOn = true;
-  document.getElementById('engineStatus').innerHTML = '<span style="color:var(--green)">✅ Dvigatel yoqildi! Isib chiqmoqda...</span>';
-  setTimeout(()=>{
-    document.getElementById('engineTemp').textContent = '94°C';
-  }, 2000);
-}
-function stopEngine() {
-  engineOn = false;
-  document.getElementById('engineStatus').innerHTML = '<span style="color:var(--red)">⏹️ Dvigatel o\'chirildi</span>';
+// ── LOCK (quick) ──
+function toggleLockQ(el){
+  locked=!locked;
+  const st=document.getElementById('qLockState');
+  const ico=el.querySelector('.qbtn-icon');
+  if(locked){
+    st.textContent='● Qulflangan';st.className='qbtn-state locked';
+    ico.textContent='🔒';toast('🔒 Mashina qulflandi','red');
+  }else{
+    st.textContent='● Ochiq';st.className='qbtn-state unlocked';
+    ico.textContent='🔓';toast('🔓 Mashina ochildi','green');
+  }
+  syncLockUI();
 }
 
-// Live update sensors (demo)
-setInterval(()=>{
-  const t = 85 + Math.floor(Math.random()*8);
-  document.getElementById('engineTemp').textContent = t + '°C';
-  document.getElementById('engineTemp').className = 'sensor-value ' + (t>95?'hot':t>88?'warm':'ok');
-}, 5000);
+// ── MASTER LOCK ──
+function masterToggleLock(){
+  locked=!locked;syncLockUI();
+  toast(locked?'🔒 Mashina qulflandi':'🔓 Mashina ochildi',locked?'red':'green');
+}
+
+function syncLockUI(){
+  const card=document.getElementById('lockCard');
+  const visual=document.getElementById('lockVisual');
+  const emoji=document.getElementById('lockEmoji');
+  const title=document.getElementById('lockTitle');
+  const sub=document.getElementById('lockSub');
+  const toggle=document.getElementById('lockToggle');
+  const st=document.getElementById('qLockState');
+  const ico=document.querySelector('#qLock .qbtn-icon');
+  const t=new Date().toLocaleTimeString('uz-UZ',{hour:'2-digit',minute:'2-digit'});
+  if(locked){
+    card.classList.remove('unlocked');visual.classList.remove('unlocked');
+    emoji.textContent='🔒';title.textContent='Qulflangan';
+    sub.textContent=`Barcha eshiklar yopiq · ${t} da`;
+    toggle.classList.remove('on');
+    st.textContent='● Qulflangan';st.className='qbtn-state locked';
+    if(ico)ico.textContent='🔒';
+  }else{
+    card.classList.add('unlocked');visual.classList.add('unlocked');
+    emoji.textContent='🔓';title.textContent='Ochiq';
+    sub.textContent=`Eshiklar ochiq · ${t} da`;
+    toggle.classList.add('on');
+    st.textContent='● Ochiq';st.className='qbtn-state unlocked';
+    if(ico)ico.textContent='🔓';
+  }
+}
+
+// ── ENGINE ──
+function engineStart(){
+  if(!locked){engineOn=true;syncEngineUI();}
+  else{toast('⚠️ Avval qulfni oching','orange');}
+}
+function engineStop(){engineOn=false;syncEngineUI();}
+
+function toggleEngineQ(el){
+  if(!engineOn&&locked){toast('⚠️ Avval qulfni oching','orange');return;}
+  engineOn=!engineOn;syncEngineUI();
+  toast(engineOn?'🔑 Dvigatel yoqildi':'⛔ Dvigatel o\'chirildi',engineOn?'green':'red');
+}
+
+function syncEngineUI(){
+  const dot=document.getElementById('engDot');
+  const status=document.getElementById('engStatus');
+  const startBtn=document.getElementById('engStart');
+  const stopBtn=document.getElementById('engStop');
+  const card=document.getElementById('engineCard');
+  const st=document.getElementById('qEngState');
+  const ico=document.querySelector('#qEngine .qbtn-icon');
+  if(engineOn){
+    dot.className='eng-dot on';status.textContent='Yoqiq';status.style.color='var(--green)';
+    startBtn.classList.add('active-eng');card.classList.add('engine-active');
+    st.textContent='● Yoqiq';st.className='qbtn-state on';
+    if(ico)ico.textContent='🔑';
+  }else{
+    dot.className='eng-dot off';status.textContent='O\'chiq';status.style.color='var(--muted)';
+    startBtn.classList.remove('active-eng');card.classList.remove('engine-active');
+    st.textContent='○ O\'chiq';st.className='qbtn-state off';
+    if(ico)ico.textContent='🔑';
+  }
+}
+
+// ── AC ──
+function toggleAcQ(el){
+  acOn=!acOn;
+  const st=document.getElementById('qAcState');
+  const ico=el.querySelector('.qbtn-icon');
+  if(acOn){st.textContent='● Yoqiq';st.className='qbtn-state on';ico.textContent='❄️';toast('❄️ Konditsioner yoqildi','');}
+  else{st.textContent='○ O\'chiq';st.className='qbtn-state off';ico.textContent='❄️';toast('❄️ Konditsioner o\'chirildi','');}
+}
+
+// ════════════════════════════════════════
+//   LIVE SENSOR UPDATE
+// ════════════════════════════════════════
+let sensorTemp=87,sensorCabin=22,sensorBatt=94,sensorFuel=68;
+
+function animateNum(el,from,to,suffix='',dur=800){
+  const start=performance.now();
+  (function tick(now){
+    const p=Math.min((now-start)/dur,1);
+    const v=Math.round(from+(to-from)*p);
+    el.childNodes[0].nodeValue=v+suffix+' ';
+    if(p<1)requestAnimationFrame(tick);
+  })(performance.now());
+}
+
+function updateSensors(){
+  sensorTemp+=((Math.random()-.48)*1.5);
+  sensorTemp=Math.max(72,Math.min(105,sensorTemp));
+  sensorCabin+=(Math.random()-.5)*.3;
+  sensorCabin=Math.max(18,Math.min(30,sensorCabin));
+  sensorBatt+=((Math.random()-.52)*.4);
+  sensorBatt=Math.max(60,Math.min(100,sensorBatt));
+  sensorFuel-=.08;
+  sensorFuel=Math.max(10,sensorFuel);
+
+  document.getElementById('sTemp').textContent=Math.round(sensorTemp);
+  document.getElementById('sCabin').textContent=Math.round(sensorCabin*10)/10;
+  document.getElementById('sBatt').textContent=Math.round(sensorBatt)+'%';
+  document.getElementById('sFuel').textContent=Math.round(sensorFuel)+'%';
+
+  // Arc update
+  const battOff=113*(1-sensorBatt/100);
+  const fuelOff=113*(1-sensorFuel/100);
+  document.getElementById('battArc').setAttribute('stroke-dashoffset',battOff.toFixed(1));
+  document.getElementById('fuelArc').setAttribute('stroke-dashoffset',fuelOff.toFixed(1));
+
+  // Alert
+  if(sensorTemp>98) toast('⚠️ Motor harorati yuqori: '+Math.round(sensorTemp)+'°C','orange');
+  if(sensorFuel<15) toast('⛽ Yoqilg\'i kam: '+Math.round(sensorFuel)+'%','red');
+}
+setInterval(updateSensors,5000);
+
+// ════════════════════════════════════════
+//   USER
+// ════════════════════════════════════════
+const u=JSON.parse(localStorage.getItem('autocontrol_user')||'{}');
+if(!u.email){window.location.href='index.html';}
 </script>
 </body>
 </html>
